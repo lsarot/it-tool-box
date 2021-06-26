@@ -1,0 +1,18 @@
+[submodule "jenkins-tutorial/jenkins-demo1"]
+	path = jenkins-tutorial/jenkins-demo1
+	url = https://github.com/lsarot/firstjenkins-multibranch-pipeline.git
+[submodule "jenkins-tutorial/jenkins-demo2"]
+	path = jenkins-tutorial/jenkins-demo2
+	url = git@gitlab.com:pulitsoft/firstjenkins-freestyle-project.git
+[submodule "jenkins-tutorial/jenkins-demo3"]
+	path = jenkins-tutorial/jenkins-demo3
+	url = https://github.com/lsarot/secondjenkins-multibranch-pipeline.git
+[submodule "jitpack-demo"]
+	path = jitpack-demo
+	url = https://github.com/lsarot/first-jitpack-demo.git
+[submodule "Microservices/SpringCloudConfigServer/spring-cloud-config-server"]
+	path = Microservices/SpringCloudConfigServer/spring-cloud-config-server
+	url = https://github.com/lsarot/spring-cloud-config-server.git
+[submodule "Microservices/microservice-demo"]
+	path = Microservices/microservice-demo
+	url = https://github.com/lsarot/microservice-demo.git
