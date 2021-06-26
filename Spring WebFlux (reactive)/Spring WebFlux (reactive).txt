@@ -1,0 +1,76 @@
+***********************************************************
+********************* SPRING WEB-FLUX *********************
+***********************************************************
+
+Spring WebFlux internally uses Project Reactor.
+
+*** PROJECT REACTOR
+https://projectreactor.io/
+Project Reactor, a JVM library based on Reactive Streams specification.
+	Publisher is the base interface for reactive communication, with its Flux and Mono implementations.
+	Reactor offers backpressure-ready network engines for HTTP (including Websockets), TCP, and UDP.
+	Reactor operators and schedulers can sustain high throughput rates, on the order of tens of millions of messages per second. Its low memory footprint goes under most radars.
+Reactor Core is the first reactive library based on the joint reactive research effort also implemented by RxJava 2. 
+
+You can use Reactor at any level of granularity:
+    in frameworks such as Spring Boot and WebFlux
+    in drivers and clients such as the CloudFoundry Java Client
+    in contracts or protocols such as RSocket and R2DBC
+
+Scaling out is an important tool for overcoming latency and slow microservices. Cloud native apps and serverless functions have a better chance at effective scale-out with asynchronous architectures.
+To assist in asynchronous designs, Reactor offers non-blocking and backpressure-ready network runtimes, including local TCP/HTTP/UDP clients and servers, based on the robust Netty framework. 
+
+
+*** REACTIVEX (THE CORE OF REACTIVENESS)
+http://reactivex.io/
+ReactiveX is a combination of the best ideas from the Observer pattern, the Iterator pattern, and functional programming.
+ReactiveX is more than an API, it is an idea and a breakthrough in programming. It has inspired several other APIs, frameworks, and even programming languages.
+ReactiveX is a collection of open source projects.
+FRONTEND: Manipulate UI events and API responses, on the Web with RxJS, or on mobile with Rx.NET and RxJava
+CROSS-PLATFORM: Available for idiomatic Java, Scala, C#, C++, Clojure, JavaScript, Python, Groovy, JRuby, and others
+https://github.com/ReactiveX/RxAndroid
+
+
+Entonces:
+Spring WebFlux usa Project Reactor
+	Project Reactor crea la librería Reactor Core, una implementación del proyecto Reactivex. Otra implementación para Java es RxJava 2.
+
+
+----------------------------------------
+
+SPRING WEB-FLUX
+
+The new framework supports two programming models:
+    Annotation-based reactive components
+    Functional routing and handling
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+    <version>2.5.0</version>
+</dependency>
+
+This pulls:
+spring-boot and spring-boot-starter for basic Spring Boot application setup
+spring-webflux framework
+reactor-core that we need for reactive streams and also reactor-netty
+
+@EnableWebFluxSecurity en la app que preste el rest service
+Los rest endpoints son como de costumbre en SpringBoot.
+Los clientes de estos api rest pueden usar Spring WebClient, el cliente http reactivo.
+
+
+----------------------------------------
+
+WE CAN USE 2 APPROACHES:
+
+* ANNOTATION BASED
+* FUNCTIONAL
+
+- ANNOTATION BASED:
+
+we use annotations mappings, as we used to in any other rest api.
+
+- FUNCTIONAL:
+
+we use functions to route and handle requests. (HandlerFunction and RouterFunctions).

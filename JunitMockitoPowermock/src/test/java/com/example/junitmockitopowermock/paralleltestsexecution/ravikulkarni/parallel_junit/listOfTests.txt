@@ -1,0 +1,2 @@
+com.example.junitmockitopowermock.paralleltestsexecution.ClassUnderTestA
+com.example.junitmockitopowermock.powermock.PowerMockTests

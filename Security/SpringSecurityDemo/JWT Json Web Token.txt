@@ -1,0 +1,141 @@
+JWT Json Web Token
+
+https://jwt.io/introduction/
+
+Anteriormente habíamos discutido la posibilidad de trabajar con un token (sin ninguna estructura) generado por nosotros, guardar en BBDD alado del username y la IP para la cual fue generado.
+Como en TCP/IP se necesita un hand-shake conocido como SYNC/ACK para establecer la comunicación, no se puede falsear la IP del package datagram (se puede hacer, pero sin sentido),
+es decir, si llega un http request, podemos fiarnos de la IP que dice ser, eso sí, no obtenerla de los headers sino del datagrama (la del header se usa ie. si hay un proxy).
+Entonces, le llega un token al servidor, busca en BBDD a quién le corresponde, que la IP sea la auténtica para la que se emitió, y decimos que es fiable el request.
+Notar que tuvimos que guardar IP y Token en BBDD.
+
+Ahora JWT:
+
+Es un token con una estructura particular, y nos permite asegurar la integridad de los datos que contiene.
+
+Se usa en diferentes escenarios, claro relacionados a peticiones http:
+	.Para asegurar que el usuario está autenticado, por ejemplo usando OAuth2.
+	.Para asegurar que los datos que envían son válidos y seguros (integridad).
+
+** Por ejemplo si tenemos un servicio de envío de email, otro servicio podría enviar una petición con un JWT junto al contenido del mail o cualquier otro dato necesario y que estemos seguros que esos datos no fueron alterados de ninguna forma.
+
+Estructura:
+
+3 partes separadas por punto (.), HEADER.PAYLOAD.SIGNATURE
+
+Las 2 primeras son en base64, la última un cifrado de las 2 anteriores (del Hash que generan), con una private-key.
+* Existen también JWT sin firmar. Realmente firmados se llaman un JWS.
+En resumen, una parte sin cifrar, otra parte el hash cifrado. Podremos saber que la signature es header y payload encriptado, pero no sabemos la password con la que se encriptó.
+Como el servidor que lo emite es el único que conoce la private-key, es el único que puede ver que header y payload original coincidan con el enviado. De esta manera, si yo abro el token y cambio algún campo y genero otro token, el servidor emisor (AuthServer o el mío) sabrá que está corrupto. (Y menos aún si modifico la signature, pq ni se podrá interpretar pq la private-key no le funciona).
+
+Entonces:
+Al emisor del token (AS o mi propio servidor, dependiendo del esquema de uso de JWT que implantemos en nuestra app), le llega un token que debe validar, usa su private-key para abrir la signature, ver que el hash coincide con hash de header + body, por lo que el token no fue modificado (hay integridad), 
+entonces, podemos confiar en que su fecha de expiración, nombre del usuario, scope y todo lo demás es válido y que él lo emitió además, 
+así, el servidor no deberá recordar tokens ni IPs, sino más bien, una private-key. (Said so, JWT is a stateless authentication mechanism, as server does not have to store user state).
+
+Este podría ser el pseudocódigo que lo forma:
+	key =  'secret'
+	signature = SHA256(key, (base64Encode(header) + base64Encode(payload))) //**
+	token = base64Encode(header) + '.' + base64Encode(payload) + '.' + signature
+
+** puede ser otro algoritmo, de encriptación Two-Way, simétrico o asimétrico.
+
+*** Enviarlo por header Authorization: Bearer token
+
+-A little example:
+-HEADER
+{
+  "alg": "HS256", // algorithm used for signature
+  "typ": "JWT"	// token type
+  //cualquier otro incluido en JWS y JWE.
+}
+-PAYLOAD
+{
+  "id": "1",
+  "username": "sergiodxa"
+  //puede tener cualquier propiedad, aunque hay una serie de nombres de propiedades definidos en el estándar
+}
+-SIGNATURE
+mugahrx93xh79pbrz49m39gp24mvzpv86pq3z42
+
+//fields available
+// https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41
+// https://tools.ietf.org/html/draft-ietf-jose-json-web-encryption-40
+
+//check JWT online:
+// https://jwt.io/
+
+-A real example:
+
+Warning: JWTs are credentials, which can grant access to resources. Be careful where you paste them!
+The means of using JWS (signed JWT) is to avoid doing expensive checking of username/password. (deliberately expensive to prevent psw cracking). 
+
+eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlUktVWG10TFhKMHBBNkxBS29aWko1ZlU0VDhCdmxKdERCb3pXanFFdnhjIn0
+.eyJqdGkiOiJjYzEyZDg1Mi0yMzBlLTQxMmQtYmU4MC1iYzVlNmJiN2Q1MjgiLCJleHAiOjE1ODcyMTA0NDIsIm5iZiI6MCwiaWF0IjoxNTg3MjEwMTQyLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODMvYXV0aC9yZWFsbXMvTXklMjBBcHAiLCJzdWIiOiIxNmQwYTRmZi1hMDhkLTQ1YjMtOTA5OC02MmMyYTI2M2QxZTUiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJuZXdDbGllbnQiLCJhdXRoX3RpbWUiOjE1ODcyMTAxNDIsInNlc3Npb25fc3RhdGUiOiIzMzQxYWVlMC0wNzhlLTRhY2ItYmZkNi02MjE5MzE0ZTZhZjQiLCJhY3IiOiIxIiwic2NvcGUiOiJwcm9maWxlIiwibmFtZSI6IkxlbyIsInByZWZlcnJlZF91c2VybmFtZSI6ImxlbyIsImxvY2FsZSI6ImVuIiwiZ2l2ZW5fbmFtZSI6IkxlbyJ9
+.BbBVWuScs5EDiVva8XUQERvWzEMl05P8PFTzvwZG-EgKrU8U2HPTXTs_4NzzM30dMS-6YJqZJ5PzCkvN1b_03jtBFeMw3cJotXn0whDb6qujf0xLYXpdOPsCmpg4wlFP48VgAiGIeXBi0q2bBu1NCP9swXxVB4P-t740fvBYthi5mm04ySe41LdEvcyryKqz-GSjKkmDVppzPani54wedfx66INFaOq6LNvUL8ai0fR8u8tUxDoBIdK6Y6UbLvYPZhaIPU89l4PjzGzjahPHVIjMkq_7vD9GFanjfSkMHij5u0Uog6ZnmLBROM43TFghy_Ue3_pFe_6s4wEei-1tRA
+-HEADER:
+{
+  "alg": "RS256",
+  "typ": "JWT",
+  "kid": "eRKUXmtLXJ0pA6LAKoZZJ5fU4T8BvlJtDBozWjqEvxc"
+}
+-PAYLOAD:
+{
+  "jti": "cc12d852-230e-412d-be80-bc5e6bb7d528", //unique id for each JWT
+  "exp": 1587210442, //expiration
+  "nbf": 0, //not before
+  "iat": 1587210142, //issued at
+  "iss": "http://localhost:8083/auth/realms/My%20App", //issuer
+  "sub": "16d0a4ff-a08d-45b3-9098-62c2a263d1e5", //subject, se puede usar para limitar su uso a ciertos casos
+  "typ": "Bearer",
+  "azp": "newClient",
+  "aud": "Android", //quien se supone que va a recibir el JWT. Un ejemplo puede ser web, android o ios. Quien use un JWT con este campo debe además de usar el JWT enviar el valor definido en esta propiedad de alguna otra forma.
+  "auth_time": 1587210142,
+  "session_state": "3341aee0-078e-4acb-bfd6-6219314e6af4",
+  "acr": "1",
+  "scope": "profile write read",
+  "name": "Leo",
+  "preferred_username": "leo",
+  "locale": "en",
+  "given_name": "Leo"
+}
+-SIGNATURE //aquí el emisor usa RSA, el tiene la public y private key
+RSASHA256(
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  a public key,
+  a private key
+)
+
+Y EN OTRO EJEMPLO EN LA PÁGINA https://jwt.io/
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
+.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+{
+  "sub": "1234567890",
+  "name": "John Doe",
+  "iat": 1516239022
+}
+HMACSHA256(// NOTAR QUE ESTO CAMBIA, SEGÚN COMO LO CONFIGURE EL EMISOR DEL TOKEN
+  base64UrlEncode(header) + "." +
+  base64UrlEncode(payload),
+  your-256-bit-secret
+)
+
+SIENDO JSON, PODEMOS VER ESTE TIPO DE DECLARACIÓN EN EL PAYLOAD:
+"scopes": [
+    {
+      "authority": "ROLE_ADMIN"
+    }
+  ],
+
+
+RECORDAR que:
+Un Hash, para una misma entrada produce siempre la misma salida y, N entradas producen la misma salida.
+Técnicamente, otra combinación de header y payload puede producir el mismo hash, pero no siendo contraseñas, será virtualmente imposible que encontremos otra combinación, no servirá una Rainbow Table ni Dictionary Attack sino Brute Force, que aquí es imposible por el tamaño del contenido. Además al notar muchas requests de un mismo IP la bloquearíamos.
+
+

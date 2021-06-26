@@ -1,0 +1,23 @@
+server:
+    port: 8082
+    servlet:
+      #context-path: /ui
+      session:
+        cookie:
+          name: UISESSION
+
+spring:
+  security:
+    oauth2:
+      client:
+        #Spring Security ships with a default provider selection page that can be reached by pointing to /login instead of /oauth2/authorization/{registrationId} in the "Sign In With.. buttons"
+        ##así mismo registramos uno nuestro usando un custom provider (nuestro por ej).. Luego en el lado cliente nos dirigimos a {baseURL}/oauth2/authorization/{customProvider}
+        registration:
+          #Spring Security is built with multiple clients in mind,
+          github:
+            clientId: 4f832d8ad8106e7a05ec
+            clientSecret: e832aef61122a65b8ba76131adbcbdb4e5f85d4d
+          
+            
+            
+            

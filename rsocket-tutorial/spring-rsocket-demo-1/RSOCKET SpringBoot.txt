@@ -1,0 +1,77 @@
+RSOCKET
+
+Motivations behind the protocol: https://github.com/rsocket/rsocket/blob/master/Motivations.md
+	RSocket is an application protocol initially developed by Netflix, that supports Reactive Streams. The motivation behind its development was to replace hypertext transfer protocol (HTTP), which is inefficient for many tasks such as microservices communication, with a protocol that has less overhead.
+	RSocket is a binary protocol for use on byte stream transports such as TCP, WebSockets, and Aeron. It enables the following symmetric interaction models via async message passing over a single connection.
+	It supports session resumption, to allow resuming long-lived streams across different transport connections. This is particularly useful for mobile‹–›server communication when network connections drop, switch, and reconnect frequently.
+
+Puede usarse en lugar de las heavy-weight solutions for messaging like AMQP.
+
+Resources:
+https://spring.io/blog/2020/03/02/getting-started-with-rsocket-spring-boot-server
+https://spring.io/blog/2020/03/09/getting-started-with-rsocket-spring-boot-client
+https://spring.io/blog/2020/03/16/getting-started-with-rsocket-spring-boot-fire-and-forget
+https://spring.io/blog/2020/03/23/getting-started-with-rsocket-spring-boot-request-stream
+https://spring.io/blog/2020/04/06/getting-started-with-rsocket-spring-boot-channels
+https://spring.io/blog/2020/05/12/getting-started-with-rsocket-servers-calling-clients
+https://spring.io/blog/2020/05/25/getting-started-with-rsocket-testing-spring-boot-responders
+https://spring.io/blog/2020/06/17/getting-started-with-rsocket-spring-security
+
+http://rsocket.io/
+https://github.com/rsocket/rsocket/blob/master/Motivations.md
+https://github.com/rsocket/rsocket-java
+https://github.com/rsocket/rsocket-demo-android-java8
+
+
+RSocket is a new messaging protocol that’s designed to solve some common microservice communication challenges. With RSocket you get a flexible protocol that works over TCP or WebSockets. 
+This means you can do binary messages without conversion. You get modern controls like multiplexing, back-pressure, resumption, and routing, and you get multiple messaging modes including fire-and-forget, request-response, and streaming. 
+RSocket is fully reactive too, so it’s ideal for your high-throughput microservice applications.
+
+RSocket lets you use its messaging models in either direction.
+
+RSocket takes a different approach than HTTP.
+RSocket defines a new protocol layer on top of transports like TCP and WebSockets.
+This new protocol offers greater choice to developers, with built-in support for four distinct interaction models:
+    
+    request/response (stream of 1)
+    fire-and-forget (no response)
+    request/stream (finite stream of many)
+    channel (bi-directional streams)
+
+From a software design point of view, RSocket’s four interaction models offer a significant benefit. It means we can model our component-to-component communications using the correct interaction model for each use case. This more productive model could save you lots of time and energy when coding!
+
+With these four communication styles at your disposal, you’re far less likely to encounter one of those pesky ‘mismatched abstraction’ scenarios we discussed at the beginning. 
+With RSocket in your toolbox, you’ll have a flexible, low friction, high-performance messaging protocol you can use in your software — one that’s purpose-built for microservice architectures.
+
+
+::: RSOCKET SERVER :::
+https://spring.io/blog/2020/03/02/getting-started-with-rsocket-spring-boot-server
+
+Sólo necesita una clase @Controller que mapee unos métodos y reciba y devuelva un Message.
+
+
+::: CLI CLIENT :::
+
+Tenemos 2 CLI clients para pruebas:
+	https://github.com/making/rsc (easier, we will try with this)
+	https://github.com/rsocket/rsocket-cli
+
+cd rsocket-server  (en el proyecto spring-rsocket-demo)
+wget -O rsc.jar https://github.com/making/rsc/releases/download/0.4.2/rsc-0.4.2.jar
+
+java -jar rsc.jar --help
+java -jar rsc.jar --debug --request --data "{\"origin\":\"Client\",\"interaction\":\"Request\"}" --route request-response tcp://localhost:7000
+
+
+::: RSOCKET CLIENT :::
+https://spring.io/blog/2020/03/09/getting-started-with-rsocket-spring-boot-client
+
+Mismas dependencias (maven) que el server app.
+
+Es un proyecto SpringBoot Shell-based app, al ejecutarlo trabaja como una consola del terminal.
+
+En dicha consola, hacemos:
+help
+para obtener info sobre posibles comandos.
+
+

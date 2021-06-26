@@ -1,0 +1,167 @@
+
+**************************************************
+          *** REST TEMPLATE GUIDE *** (DEPRECATED)
+**************************************************
+// https://www.baeldung.com/rest-template
+
+As of Spring Framework 5, Spring introduced 'WebClient' as a new HTTP client that supports WebFlux stack for async ops.
+It supports sync and async operations!
+
+GET
+
+*** GET PLAIN JSON
+
+RestTemplate restTemplate = new RestTemplate();
+ResponseEntity<String> response = restTemplate.getForEntity("url-for-request", String.class);
+assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+response.getBody();
+response.getHeaders();
+
+-- manipulate with Jackson library
+ObjectMapper mapper = new ObjectMapper();
+JsonNode root = mapper.readTree(response.getBody());
+JsonNode node = root.path("json_node");
+assertThat(node.asText(), notNullValue());
+
+*** GET POJO
+
+Foo foo = restTemplate.getForObject("url-for-request", Foo.class);
+HttpHeaders httpHeaders = restTemplate.headForHeaders("url-for-request");
+assertTrue(httpHeaders.getContentType().includes(MediaType.APPLICATION_JSON));
+
+*** exchange()
+
+ResponseEntity<List<Tweet>> response = restTemplate.exchange("url-for-request", HttpMethod.GET, null, new ParameterizedTypeReference<List<Tweet>>(){});
+List<Tweet> result = response.getBody();
+result.forEach(tweet -> log.info(tweet.toString()));
+
+
+POST
+
+*** postForObject() OR postForEntity()
+//returns the resource created
+
+RestTemplate restTemplate = new RestTemplate();
+HttpEntity<Foo> request = new HttpEntity<>(new Foo("bar"));
+Foo foo = restTemplate.postForObject("url-for-request", request, Foo.class);
+assertThat(foo, notNullValue());
+
+*** postForLocation()
+//returns the URI of the newly created Resource
+
+HttpEntity<Foo> request = new HttpEntity<>(new Foo("bar"));
+URI location = restTemplate.postForLocation("url-for-request", request);
+assertThat(location, notNullValue());
+
+*** exchange()
+//Let's have a look at how to do a POST with the more generic exchange API. Will return an ResponseEntity
+
+RestTemplate restTemplate = new RestTemplate();
+HttpEntity<Foo> request = new HttpEntity<>(new Foo("bar"));
+ResponseEntity<Foo> response = restTemplate.exchange("url-for-request", HttpMethod.POST, request, Foo.class);
+assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
+Foo foo = response.getBody(); 
+assertThat(foo, notNullValue());
+
+
+POST - SUBMIT FORM DATA
+
+//First, we need to set the Content-Type header to application/x-www-form-urlencoded.
+//This makes sure that a large query string can be sent to the server, containing name/value pairs separated by &:
+
+HttpHeaders headers = new HttpHeaders();
+headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+//We can wrap the form variables into a LinkedMultiValueMap:
+
+MultiValueMap<String, String> map= new LinkedMultiValueMap<>();
+map.add("id", "1");
+
+//Next, we build the Request using an HttpEntity instance:
+
+HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+//Finally, we can connect to the REST service by calling restTemplate.postForEntity() on the Endpoint: /foos/form
+
+ResponseEntity<String> response = restTemplate.postForEntity("url-for-request", request, String.class);
+assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
+
+
+PUT
+
+Foo updatedInstance = new Foo("newName");
+updatedInstance.setId(1);
+HttpEntity<Foo> requestUpdate = new HttpEntity<>(updatedInstance, headers);
+restTemplate.exchange("url-for-request", HttpMethod.PUT, requestUpdate, Void.class); //the op is not returning a body back to the client!
+
+
+PUT - WITH CALLBACK
+
+RequestCallback requestCallback(final Foo updatedInstance) {
+    return clientHttpRequest -> {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(clientHttpRequest.getBody(), updatedInstance);
+        clientHttpRequest.getHeaders().add(
+          HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        clientHttpRequest.getHeaders().add(
+          HttpHeaders.AUTHORIZATION, "Basic " + getBase64EncodedLogPass());
+    };
+}
+
+//Next, we create the Resource with a POST request:
+
+ResponseEntity<Foo> response = restTemplate
+  .exchange(fooResourceUrl, HttpMethod.POST, request, Foo.class);
+assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
+
+//And then we update the Resource:
+
+Foo updatedInstance = new Foo("newName");
+updatedInstance.setId(response.getBody().getId());
+String resourceUrl =fooResourceUrl + '/' + response.getBody().getId();
+restTemplate.execute(
+  resourceUrl, 
+  HttpMethod.PUT, 
+  requestCallback(updatedInstance), 
+  clientHttpResponse -> null);
+
+
+DELETE
+
+restTemplate.delete("url-for-request");
+
+
+GET ALLOWED OPERATIONS (HTTP OPTIONS)
+
+//Next, we are going to have a quick look at using an OPTIONS request and exploring the allowed operations on a specific URI using this kind of request; the API is optionsForAllow:
+
+Set<HttpMethod> optionsForAllow = restTemplate.optionsForAllow(fooResourceUrl);
+HttpMethod[] supportedMethods = {HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE};
+assertTrue(optionsForAllow.containsAll(Arrays.asList(supportedMethods)));
+
+
+CONFIGURE TIMEOUT
+
+RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
+
+private ClientHttpRequestFactory getClientHttpRequestFactory() {
+    HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+    clientHttpRequestFactory.setConnectTimeout(5000);
+    return clientHttpRequestFactory;
+}
+
+//And we can use HttpClient for further configuration options:
+
+private ClientHttpRequestFactory getClientHttpRequestFactory() {
+    int timeout = 5000;
+    RequestConfig config = RequestConfig.custom()
+      .setConnectTimeout(timeout)
+      .setConnectionRequestTimeout(timeout)
+      .setSocketTimeout(timeout)
+      .build();
+    CloseableHttpClient client = HttpClientBuilder
+      .create()
+      .setDefaultRequestConfig(config)
+      .build();
+    return new HttpComponentsClientHttpRequestFactory(client);
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Welcome to Spring Security SSO Client (Thymeleaf to access an object)</title>
+    </head>
+    <body>
+    	<h3>Welcome to Spring Security SSO Client (Thymeleaf to access an object)</h3>
+    	<h1>Secured Page</h1>
+        <h2>Welcome</h2>
+        
+        <h2>
+        Deberia tener datos del Principal.
+        <br/> Veamos la consola del AS o RS que son el mismo ahora
+        <br/> Tendrá este objeto retornado:
+        <br/> org.springframework.security.oauth2.provider.OAuth2Authentication@7e0fed04: Principal: org.springframework.security.core.userdetails.User@596e75ba: Username: john@test.com; Password: [PROTECTED]; Enabled: true; AccountNonExpired: true; credentialsNonExpired: true; AccountNonLocked: true; Granted Authorities: ROLE_USER; Credentials: [PROTECTED]; Authenticated: true; Details: remoteAddress=127.0.0.1, tokenType=bearertokenValue=< TOKEN>; Granted Authorities: ROLE_USER
+        </h2>
+        
+        <h1>LO IMPORTANTE ES QUE ACCEDIMOS FUE CON UN TOKEN OTORGADO POR EL AS</h1>
+        
+        
+        Welcome, <span th:text="${#authentication.name}">Name</span>
+        
+        <p>Spring Security Thymeleaf tutorial</p>
+        <div sec:authorize="hasRole('USER')">Text visible to user.</div>
+        <div sec:authorize="hasRole('ADMIN')">Text visible to admin.</div>
+        <div sec:authorize="isAuthenticated()">
+            Text visible only to authenticated users.
+        </div>
+        Authenticated username:
+        <div sec:authentication="name"></div>
+        Authenticated user roles:
+        <div sec:authentication="principal.authorities"></div>
+    </body>
+</html>

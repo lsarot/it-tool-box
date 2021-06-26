@@ -1,0 +1,40 @@
+
+JAVA GENERICS
+
+Look at the signature of Collections.sort method:
+public static <T extends Comparable<? super T>> void sort(List<T> list)
+//acepta que T sea una clase que implemente/extienda de Comparable de T o alguna superclase de T.
+
+As to how this is useful in 
+<T extends Comparable<? super T>>
+it's when you have something like 
+Cat extends Animal implements Comparable<Animal>
+
+Therefore, with a List<Cat> listOfCat, you can now Collections.sort(listOfCat).
+
+Had it been declared as follows / Si se hubiera declarado como sigue:
+
+public static <T extends Comparable<T>> void sort(List<T> list)
+then you'd have to have Cat implements Comparable<Cat> to use sort.
+By using the ? super T bounded wildcard, 
+the method Collections.sort becomes more flexible.
+
+
+A more complex example:
+
+//se colocan todas las genéricas antes del return type separadas por coma(,)
+//en este caso T es de la clase (parametrizada)
+
+public static 	<T, SOURCE extends Collection<T>, DEST extends Collection<T>> 
+DEST transferElements(
+        SOURCE sourceCollection,
+        Supplier<DEST> collectionFactory) {
+        
+        DEST result = collectionFactory.get();
+        for (T t : sourceCollection) {
+            result.add(t);
+        }
+        return result;
+}
+
+

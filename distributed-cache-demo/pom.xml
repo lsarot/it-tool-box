@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example.leo</groupId>
+  <artifactId>distributed-cache-demo</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>DistributedCacheDemo</name>
+  <description>To try some Distributed Cache features and libs</description>
+  
+  <dependencies>
+  
+  	<!-- :::: REDIS :::: -->
+  
+  	<!-- https://github.com/redisson/redisson -->
+  	<dependency>
+	    <groupId>org.redisson</groupId>
+	    <artifactId>redisson</artifactId>
+	    <version>3.13.2</version>
+	</dependency>
+	
+	<!-- https://github.com/lettuce-io/lettuce-core -->
+	<dependency>
+		<groupId>io.lettuce</groupId>
+		<artifactId>lettuce-core</artifactId>
+		<version>5.3.2.RELEASE</version>
+	</dependency>
+  
+  	<!-- for Redis low level client -->
+	<!-- Thanks for using https://jar-download.com -->
+  	<dependency>
+		<groupId>io.netty</groupId>
+		<artifactId>netty-transport-native-epoll</artifactId>
+		<version>4.1.51.Final</version>
+	</dependency>
+  	
+  	
+  	<!-- :::: INFINISPAN :::: -->
+  	
+  	<dependency>
+		<groupId>org.infinispan</groupId>
+		<artifactId>infinispan-core</artifactId>
+		<version>11.0.1.Final</version>
+	</dependency>
+  	
+  	
+  	<!-- :::: HAZELCAST :::: -->
+  	
+  	<!-- needed to create standalone Hazelcast cluster member and the Hazelcast Java Client -->
+  	<dependency>
+	    <groupId>com.hazelcast</groupId>
+	    <artifactId>hazelcast</artifactId>
+	    <version>4.0.1</version>
+	</dependency>
+  	<dependency>
+	    <groupId>com.hazelcast</groupId>
+	    <artifactId>hazelcast-client</artifactId>
+	    <version>3.12.8</version>
+	</dependency>
+	<dependency>
+	    <groupId>com.hazelcast.jet</groupId>
+	    <artifactId>hazelcast-jet</artifactId>
+	    <version>4.2</version><!-- por sí sólo funciona, pero si tenemos una versión de com.hazelcast:hazelcast esta debe ser la 4.0.1 -->
+	</dependency>
+  	
+  	
+  </dependencies>
+  
+  
+  <build>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>com.example.leo.hazelcastdemo.hazelcast_jet.JetDemo</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+      </plugins>
+    </build>
+  
+</project>

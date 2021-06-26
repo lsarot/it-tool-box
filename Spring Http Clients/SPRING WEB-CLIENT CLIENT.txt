@@ -1,0 +1,273 @@
+
+**************************************************
+    *** Spring WebClient vs. RestTemplate ***
+**************************************************
+// https://www.baeldung.com/spring-webclient-resttemplate
+
+*** RestTemplate Blocking Client
+
+RestTemplate ES SÍNCRONO, USA UN THREAD POR REQUEST.
+
+For a long time, Spring has been offering RestTemplate as a web client abstraction. Under the hood, RestTemplate uses the Java Servlet API, which is based on the thread-per-request model.
+This means that the thread will block until the web client receives the response. The problem with the blocking code is due to each thread consuming some amount of memory and CPU cycles.
+Let us consider having a lot of incoming requests, which are waiting for some slow service needed to produce the result.
+Sooner or later, the requests waiting for the results will pile up. Consequently, the application will create many threads, which will exhaust the thread pool or occupy all the available memory. 
+We can also experience performance degradation because of the frequent CPU context (thread) switching.
+
+*** WebClient Non-Blocking Client
+
+WebClient PERMITE ASÍNCRONO, REUTILIZANDO THREADS.
+Detrás del telón, crea algo parecido a Tasks, sólo usando threads cuando la respuesta está lista.
+
+On the other side, WebClient uses an asynchronous, non-blocking solution provided by the Spring Reactive framework.
+While RestTemplate uses the caller thread for each event (HTTP call), WebClient will create something like a “task” for each event. Behind the scenes, the Reactive framework will queue those “tasks” and execute them only when the appropriate response is available.
+The Reactive framework uses an event-driven architecture. It provides means to compose asynchronous logic through the Reactive Streams API. As a result, the reactive approach can process more logic while using fewer threads and system resources, compared to the synchronous/blocking method.
+WebClient is part of the Spring WebFlux library. Therefore, we can additionally write client code using a functional, fluent API with reactive types (Mono and Flux) as a declarative composition.
+
+
+**************************************************
+          *** WEB-CLIENT GUIDE ***
+**************************************************
+// https://www.baeldung.com/spring-5-webclient
+
+A reactive web client introduced in Spring 5.
+WebClient is an interface representing the main entry point for performing web requests.
+Replaces RestTemplate
+Supports sync and async operations.
+The interface has a single implementation, the DefaultWebClient class.
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-webflux</artifactId>
+</dependency>
+
+
+CREATING AN INSTANCE
+
+BASIC
+WebClient client = WebClient.create();
+WebClient client = WebClient.create("http://localhost:8080");
+
+CUSTOMIZABLE
+
+WebClient client = WebClient.builder()
+  .baseUrl("http://localhost:8080")
+  .defaultCookie("cookieKey", "cookieValue")
+  .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE) 
+  .defaultUriVariables(Collections.singletonMap("url", "http://localhost:8080"))
+  .build();
+
+
+HttpClient httpClient = HttpClient.create()
+  .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+  .responseTimeout(Duration.ofMillis(5000))
+  .doOnConnected(conn -> 
+    conn.addHandlerLast(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS))
+      .addHandlerLast(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS)));
+
+WebClient client = WebClient.builder()
+  .clientConnector(new ReactorClientHttpConnector(httpClient))
+  .build();
+
+//Note that while we can call timeout on our client request as well, this is a signal timeout, not an HTTP connection, a read/write, or a response timeout; it is a timeout for the Mono/Flux publisher.
+
+
+WE WILL BE WORKING WITH (in this order)
+
+WebClient.UriSpec
+WebClient.RequestBodySpec
+WebClient.RequestHeadersSpec
+WebClient.ResponseSpec
+
+
+DEFINE THE METHOD
+
+UriSpec<RequestBodySpec> uriSpec = client.method(HttpMethod.POST);
+client.get() .post() .delete() ..
+
+
+DEFINE THE URL
+
+RequestBodySpec bodySpec = uriSpec.uri("/resource");
+
+RequestBodySpec bodySpec = uriSpec.uri(uriBuilder -> uriBuilder.pathSegment("/resource").build());
+
+RequestBodySpec bodySpec = uriSpec.uri(URI.create("/resource"));
+
+  .uri("/employees/{id}", "1")
+
+
+DEFINE THE BODY
+
+RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue("data");
+
+RequestHeadersSpec<?> headersSpec = bodySpec.body(Mono.just(new Foo("name")), Foo.class);
+
+RequestHeadersSpec<?> headersSpec = bodySpec.body(BodyInserters.fromValue("data"));
+
+//for a reactive instance
+RequestHeadersSpec headersSpec = bodySpec.body(
+  BodyInserters.fromPublisher(Mono.just("data")),
+  String.class);
+
+//multipart request
+LinkedMultiValueMap map = new LinkedMultiValueMap();
+map.add("key1", "value1");
+map.add("key2", "value2");
+RequestHeadersSpec<?> headersSpec = bodySpec.body(BodyInserters.fromMultipartData(map));
+
+
+DEFINE THE HEADERS
+
+//there is additional support for the most commonly used headers like “If-None-Match”, “If-Modified-Since”, “Accept”, and “Accept-Charset”.
+ResponseSpec responseSpec = headersSpec.header(
+    HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+  .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
+  .acceptCharset(StandardCharsets.UTF_8)
+  .ifNoneMatch("*")
+  .ifModifiedSince(ZonedDateTime.now())
+  .retrieve();
+
+
+GETTING A RESPONSE
+
+//use either the exchangeToMono/exchangeToFlux or the retrieve method.
+
+//The retrieve method is the shortest path to fetching a body directly:
+Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
+
+...uri("/employees/{id}", "1").retrieve().bodyToMono(Employee.class);
+
+//all from the beginning
+Flux<Tweet> tweetFlux = WebClient.create().get().uri("uri").retrieve().bodyToFlux(Tweet.class);
+tweetFlux.subscribe(tweet -> log.info(tweet.toString()));
+
+
+//The exchangeToMono and exchangeToFlux methods allow access to the ClientResponse along with its status and headers:
+Mono<String> response = headersSpec.exchangeToMono(response -> {
+  if (response.statusCode().equals(HttpStatus.OK)) {
+      return response.bodyToMono(String.class);
+  } else if (response.statusCode().is4xxClientError()) {
+      return Mono.just("Error response");
+  } else {
+      return response.createException().flatMap(Mono::error);
+  }
+});
+
+
+-------------------------------------------------- WebTestClient (analogous to TestRestTemplate)
+/* The WebTestClient is the main entry point for testing WebFlux server endpoints.
+It has a very similar API to the WebClient, and it delegates most of the work to 
+an internal WebClient instance focusing mainly on providing a test context.
+The DefaultWebTestClient class is a single interface implementation.
+The client for testing can be bound to a real server or work with specific controllers or functions. */
+
+BINDING TO A SERVER
+
+WebTestClient testClient = WebTestClient
+  .bindToServer()
+  .baseUrl("http://localhost:8080")
+  .build();
+
+
+BINDING TO A ROUTER (MOCK A RESPONSE?)
+
+RouterFunction function = RouterFunctions.route(
+  RequestPredicates.GET("/resource"),
+  request -> ServerResponse.ok().build()
+);
+
+WebTestClient.bindToRouterFunction(function).build()
+  //now do the actual request, with assertions included!
+  .get().uri("/resource")
+  .exchange()
+  .expectStatus().isOk()
+  .expectBody().isEmpty();
+
+
+BINDING TO A WEB HANDLER (MOCK A RESPONSE? ANOTHER ALTERNATIVE)
+
+WebHandler handler = exchange -> Mono.empty();
+WebTestClient.bindToWebHandler(handler).build();
+
+
+BINDING TO AN APPLICATION CONTEXT
+//A more interesting situation occurs when we are using the bindToApplicationContext method. It takes an ApplicationContext and analyses the context for controller beans and @EnableWebFlux configurations.
+
+@Autowired private ApplicationContext context;
+WebTestClient testClient = WebTestClient.bindToApplicationContext(context).build();
+
+
+BINDING TO A CONTROLLER
+
+//A shorter approach would be providing an array of controllers we want to test by the bindToController method. Assuming we've got a Controller class and we injected it into a needed class.
+
+@Autowired private Controller controller;
+WebTestClient testClient = WebTestClient.bindToController(controller).build();
+
+
+MAKING A REQUEST
+
+//After building a WebTestClient object, all following operations in the chain are going to be similar to the WebClient until the exchange method (a way to get a response), which provides the WebTestClient.ResponseSpec interface to work with useful methods like the expectStatus, expectBody, and expectHeader:
+
+WebTestClient
+  .bindToServer()
+    .baseUrl("http://localhost:8080")
+    .build()
+    .post().uri("/resource")
+  .exchange()
+    .expectStatus().isCreated()
+    .expectHeader().valueEquals("Content-Type", "application/json")
+    .expectBody().jsonPath("field").isEqualTo("value");
+
+
+-------------------------------------------------- EXAMPLES:
+
+@GetMapping("/slow-service-tweets")
+private List<Tweet> getAllTweets() {
+    Thread.sleep(2000L); // delay
+    return Arrays.asList(
+      new Tweet("RestTemplate rules", "@user1"),
+      new Tweet("WebClient is better", "@user2"),
+      new Tweet("OK, both are useful", "@user1"));
+}
+
+*** RestTemplate ***
+
+@GetMapping("/tweets-blocking")
+public List<Tweet> getTweetsBlocking() {
+    log.info("Starting BLOCKING Controller!");
+    RestTemplate restTemplate = new RestTemplate();
+    ResponseEntity<List<Tweet>> response = restTemplate.exchange("uri", HttpMethod.GET, null, new ParameterizedTypeReference<List<Tweet>>(){});
+
+    List<Tweet> result = response.getBody();
+    result.forEach(tweet -> log.info(tweet.toString()));
+    log.info("Exiting BLOCKING Controller!");
+    return result;
+}
+Starting BLOCKING Controller!
+Tweet(text=RestTemplate rules, username=@user1)
+Tweet(text=WebClient is better, username=@user2)
+Tweet(text=OK, both are useful, username=@user1)
+Exiting BLOCKING Controller!
+
+*** WebClient (reactive) ***
+
+@GetMapping(value = "/tweets-non-blocking", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+public Flux<Tweet> getTweetsNonBlocking() {
+    log.info("Starting NON-BLOCKING Controller!");
+    Flux<Tweet> tweetFlux = WebClient.create()
+      .get().uri("uri")
+      .retrieve()
+      .bodyToFlux(Tweet.class);
+
+    tweetFlux.subscribe(tweet -> log.info(tweet.toString()));
+    log.info("Exiting NON-BLOCKING Controller!");
+    return tweetFlux;
+}
+Starting NON-BLOCKING Controller!
+Exiting NON-BLOCKING Controller!
+Tweet(text=RestTemplate rules, username=@user1)
+Tweet(text=WebClient is better, username=@user2)
+Tweet(text=OK, both are useful, username=@user1)
+

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        As per the naming convention, all the starters which are not managed by the core Spring Boot team should start with the library name followed by the suffix -spring-boot-starter.
+    -->
+    <artifactId>greeter-spring-boot-starter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>greeter-spring-boot-starter</name>
+
+    <parent>
+        <groupId>com.baeldung.tutorials</groupId>
+        <artifactId>spring-boot-custom-starter</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <properties>
+        <greeter.version>0.0.1-SNAPSHOT</greeter.version>
+        <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
+    </properties>
+
+    <dependencies>
+    	<!-- 
+    	sample-app añade el starter,
+    	starter añade el autoconfigure y la librería,
+    	autoconfigure añade la librería.
+    	
+    	sample y autoconfigure usan la librería propiamente (sus clases).
+    	autoconfigure la añadió a su pom
+    	sample NO, pero sample añade a starter y starter la librería
+    	
+    	Entonces si sample -> starter -> autoconfigure -> library
+    	                              -> library
+    	por qué library no se añade transitivamente a sample ?
+    	 -->
+    	 
+        <!--THE AUTOCONFIGURE AND THE LIBRARY NEEDED-->
+        <dependency>
+            <groupId>com.baeldung.tutorials</groupId>
+            <artifactId>greeter-spring-boot-autoconfigure</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baeldung.tutorials</groupId>
+            <artifactId>greeter-library-2</artifactId>
+            <version>${greeter.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

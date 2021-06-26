@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="700.0" prefWidth="1000.0" xmlns:fx="http://javafx.com/fxml" fx:controller="RaidGUIController">
+  <children>
+    <SplitPane dividerPositions="0.4340974212034384" focusTraversable="true" orientation="VERTICAL" prefHeight="700.0" prefWidth="1000.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+          <children>
+            <Accordion minWidth="803.0" prefHeight="245.0" prefWidth="803.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <expandedPane>
+                <TitledPane fx:id="x1" animated="false" text="Bienvenida">
+                  <content>
+                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                      <children>
+                        <Label layoutX="165.0" layoutY="34.0" text="Sistema educativo sobre tecnologías Raid y su posible implementación sobre un conjunto dado de discos" />
+                        <Label layoutX="14.0" layoutY="100.0" text="Bibliografía" />
+                        <Label layoutX="98.0" layoutY="111.0" prefHeight="22.000099999997474" text="http://www.intel.com/support/sp/chipsets/imsm/sb/cs-009337.htm" />
+                        <Label layoutX="98.0" layoutY="134.0" text="http://es.wikipedia.org/wiki/RAID#RAID_0" />
+                        <Label layoutX="98.0" layoutY="100.0" text="TANEMBAUM, Andrew S., SISTEMAS OPERATIVOS MODERNOS. Tercera Edición, 2009. Pearson Educación de México, S.A. pp 1076" />
+                      </children>
+                    </AnchorPane>
+                  </content>
+                </TitledPane>
+              </expandedPane>
+              <panes>
+                <fx:reference source="x1" />
+                <TitledPane fx:id="x2" animated="false" text="Inicio">
+                  <content>
+                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="233.0" prefWidth="799.0">
+                      <children>
+                        <TextField fx:id="tfqhdd" layoutX="14.0" layoutY="22.0" prefWidth="51.0" />
+                        <Label layoutX="72.0" layoutY="25.0" text="Cantidad de HDD" />
+                        <ComboBox fx:id="cbvelhdd" layoutX="14.0" layoutY="80.0">
+                          <items>
+                            <FXCollections fx:factory="observableArrayList">
+                              <String fx:value="5400" />
+                              <String fx:value="7200" />
+                              <String fx:value="10000" />
+                            </FXCollections>
+                          </items>
+                        </ComboBox>
+                        <Label layoutX="105.0" layoutY="83.0" text="Velocidad de los HDD (rpm)" />
+                        <ComboBox fx:id="cbnivraid" layoutX="14.0" layoutY="116.0" onAction="#actionNivelSelected">
+                          <items>
+                            <FXCollections fx:factory="observableArrayList">
+                              <String fx:value="0" />
+                              <String fx:value="1" />
+                              <String fx:value="2" />
+                              <String fx:value="3" />
+                              <String fx:value="4" />
+                              <String fx:value="5" />
+                              <String fx:value="6" />
+                            </FXCollections>
+                          </items>
+                        </ComboBox>
+                        <Label layoutX="72.0" layoutY="119.0" text="Nivel de RAID a implementar" />
+                        <Button fx:id="btcomprobar" layoutX="14.0" layoutY="149.0" mnemonicParsing="false" onAction="#actionButtonComprobar" text="Comprobar" />
+                        <Label layoutX="680.0" layoutY="17.0" text="Capacidad del conjunto (GB)" />
+                        <Label layoutX="678.0" layoutY="42.0" text="Velocidad del conjunto (rpm)" />
+                        <TextField fx:id="tfcapconjunto" editable="false" layoutX="871.0" layoutY="14.0" prefWidth="109.0" />
+                        <TextField id="tfvelconjunto" fx:id="tfvellectura" editable="false" layoutX="842.0" layoutY="66.0" prefWidth="138.0" />
+                        <TextField id="tfvelconjunto" fx:id="tfvelescritura" editable="false" layoutX="842.0" layoutY="91.0" prefWidth="138.0" />
+                        <Label layoutX="788.0" layoutY="69.0" text="lectura" />
+                        <Label layoutX="776.0" layoutY="94.0" text="escritura" />
+                        <TextArea editable="false" layoutX="308.0" layoutY="16.0" prefHeight="194.0" prefWidth="334.0" text="* Considerese que la velocidad de lectura y escritura indicada es la máxima en todo caso, y varia mucho dependiendo del tipo de configuración, p.e. en Raid 0 es probable que sea del doble en lectura, pero en otro Raid que implemente redundancia dependerá de las solicitudes del SO, o quizás de la posición de las agujas sincronizadas en determinado momento, o del embotellamiento en el disco de paridad o si se está reparando un disco. Lo importante es saber que no hay una jerarquía en cuanto a mejoría, hay muchos tipos de Raid y cada configuración aplica en mejor o peor medida dependiendo de los intereses del administrador del sistema, unos ofrecen mayor rendimiento en lectura, pero poco desempeño en cuanto a escritura, otros ofrecen redundancia y otros no (Raid 0); existe un universo de posibilidades en cuanto a configuraciones, y está en manos del profesional determinar cuál se ajusta mejor a sus necesidades." wrapText="true" />
+                        <TextField id="tfqhdd" fx:id="tfcapdisco" layoutX="14.0" layoutY="50.0" prefWidth="65.0" />
+                        <Label layoutX="83.0" layoutY="53.0" text="Capacidad de cada HDD (GB)" />
+                        <Button id="btcomprobar" fx:id="btborrar" layoutX="14.0" layoutY="201.0" mnemonicParsing="false" onAction="#actionButtonBorrarcampos" text="Borrar campos">
+                          <font>
+                            <Font name="System Italic" size="9.0" />
+                          </font>
+                        </Button>
+                        <CheckBox fx:id="checkb1" layoutX="705.0" layoutY="192.0" mnemonicParsing="false" text="¿Se puede emplear esta configuración?" />
+                        <TextField fx:id="tfhamming" editable="false" layoutX="136.0" layoutY="149.0" prefWidth="43.0" visible="false" />
+                        <Label fx:id="labelh1" layoutX="193.0" layoutY="152.0" text="Hamming" visible="false" />
+                        <TextField id="tfhamming" fx:id="tfhamming2" editable="false" layoutX="136.0" layoutY="173.0" prefWidth="43.0" visible="false" />
+                        <Label id="label2" fx:id="labelh2" layoutX="193.0" layoutY="176.0" text="N" visible="false" />
+                        <Label fx:id="labelsobra" layoutX="823.0" layoutY="127.0" text="sobra (discos)" visible="false" />
+                        <TextField fx:id="tfsobra" editable="false" layoutX="921.0" layoutY="124.0" prefWidth="59.0" visible="false" />
+                      </children>
+                    </AnchorPane>
+                  </content>
+                </TitledPane>
+                <TitledPane animated="false" expanded="false" text="Ventajas y desventajas">
+                  <content>
+                    <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                      <children>
+                        <Label layoutX="14.0" layoutY="6.0" text="Ventajas" />
+                        <Label layoutX="14.0" layoutY="121.0" text="Desventajas" />
+                        <TextArea fx:id="taventajas" editable="false" layoutX="101.0" layoutY="6.0" prefHeight="104.0" prefWidth="879.0" wrapText="true" />
+                        <TextArea fx:id="tadesventajas" editable="false" layoutX="101.0" layoutY="121.0" prefHeight="104.0" prefWidth="879.0" wrapText="true" />
+                      </children>
+                    </AnchorPane>
+                  </content>
+                </TitledPane>
+              </panes>
+            </Accordion>
+          </children>
+        </AnchorPane>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="190.0" prefWidth="803.0">
+          <children>
+            <ImageView fx:id="ivimagen" fitHeight="375.75" fitWidth="501.0" layoutX="249.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+            <ProgressBar fx:id="pbar" layoutX="370.0" layoutY="139.0" prefWidth="200.0" progress="0.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+  </children>
+</AnchorPane>

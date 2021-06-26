@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.5.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	
+	<groupId>com.example</groupId>
+	<artifactId>junit-mockito-powermock</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>JunitMockitoPowermock</name>
+	<description>Demo project for JUnitMockitoPowermock</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		
+		<junit-jupiter.version>5.6.0</junit-jupiter.version>
+		<junit.version>4.13</junit.version>
+		<powermock.version>2.0.5</powermock.version>
+	</properties>
+	
+	
+	<repositories>
+		<!-- AÑADO UN REPOSITORIO REMOTO PARA LA BÚSQUEDA -->
+		<repository>
+			<id>org.source.repo</id>
+			<url>https://repo1.maven.org/maven2/</url>
+		</repository>
+	</repositories>
+	
+
+	<dependencies>
+	
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		
+		<!-- CON ESTO ME BASTA PARA MOCKEAR. SPRING YA TRAE JUnit Jupiter 5+ con sus dependencias (Platform, Engine, Api, pero esta vez excluye Vintage, que luego la agregamos aparte) -->
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-core</artifactId>
+		    <!--<version>3.2.4</version>-->
+		    <scope>test</scope>
+		</dependency>
+		
+		
+		<!-- 
+		con JUnit 4 sólo usabas junit:junit. 
+		Con JUnit 5 usamos org.junit.jupiter:junit-jupiter-engine, que trae parece platform y api también 
+		-->
+		
+		<!-- TO RUN JUNIT 4 & 5 TESTS IN THE SAME PROJECT -->
+		<!-- POWERMOCK DEPENDS ON JUNIT4 AT THE TIME -->
+				<!-- JUnit Jupiter (5+) Engine to depend on the JUnit5 engine and JUnit 5 API -->
+				<!-- esto lo trae Spring boot 5 con org.springframework.boot:spring-boot-starter-test, pero arriba excluye junit-vintage-engine que agregamos abajo! -->
+		        <!--
+		        <dependency>
+		        	<groupId>org.junit.jupiter</groupId>
+		            <artifactId>junit-jupiter-engine</artifactId>
+		            <version>${junit-jupiter.version}</version>
+		            <scope>test</scope>
+		        </dependency>
+		        -->
+        <!--JUnit Jupiter (5+) Engine to depend on the JUnit4 engine and JUnit 4 API  -->
+        <!-- para compatibilidad con junit 3 y 4 -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit-jupiter.version}</version><!--$NO-MVN-MAN-VER$-->
+        </dependency>
+        <!-- Optional : override the JUnit 4 API version provided by junit-vintage-engine -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version><!--$NO-MVN-MAN-VER$-->
+            <scope>test</scope>
+        </dependency>
+        
+        
+        
+		
+		
+		<!-- TO MOCK STATIC METHODS WITH POWERMOCK -->
+		<dependency>
+		    <groupId>org.powermock</groupId>
+		    <artifactId>powermock-core</artifactId>
+		    <version>${powermock.version}</version>
+		    <scope>test</scope>
+		</dependency>
+		<!-- para integrarlo con junit 4 -->
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- ...mockito2 para api mockito 2+ (hay mockito1, y para integrar con EasyMock, JMockit y otras)-->
+		<dependency>
+			<groupId>org.powermock</groupId>
+			<artifactId>powermock-api-mockito2</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		
+		
+	</dependencies>
+
+
+
+
+
+	<build>
+		<plugins>
+		
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			
+			<!-- TO RUN JUNIT 4 & 5 TESTS IN THE SAME PROJECT -->
+            <plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!--<version>2.22.2</version>-->
+                <!-- 
+                <dependencies>
+	            	<dependency>
+	                    <groupId>org.apache.maven.surefire</groupId>
+	                    <artifactId>common-junit48</artifactId>
+	                    <version>2.17</version>
+	                </dependency>
+	            </dependencies>
+                 -->
+                <configuration>
+                	<skipTests>false</skipTests><!-- o mvn install -DskipTests=true, o -Dmaven.test.skip=true (este es fail-safe) -->
+                	<parallel>classesAndMethods</parallel><!-- JUnit 4.7+ -->
+                	<threadCount>4</threadCount>
+                	<groups>com.example.junitmockitopowermock.mavenwithtests.categories.CatSlowTests</groups><!-- puedo separarlos por coma , -->
+                	<!-- JUnit 4.8+. Ejecuta sólo x categorias de tests -->
+                </configuration>
+            </plugin>
+            
+            <!-- NO ME HA SERVIDO EJECUTAR TEST POR CATEGORIA NI CAMBIANDO A VERSION 2.13, 2.17 SUREFIRE CON DEPENDENCY surefire-junit47, common-junit48 respectivamente -->
+			
+			
+			
+			<!-- OTRA CONFIGURACIÓN QUE NO SIRVIÓ
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <argLine>
+                    	illegal-access=permit
+                    </argLine>
+                    <skipTests>false</skipTests>
+                    <parallel>classesAndMethods</parallel>
+                    <threadCount>4</threadCount>
+                    <groups>com.example.junitmockitopowermock.mavenwithtests.categories.CatSlowTests</groups>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <argLine>
+                        illegal-access=permit
+                    </argLine>
+                </configuration>
+            </plugin>
+			 -->
+			
+		</plugins>
+	</build>
+
+
+
+
+
+
+
+	<!-- NINGÚN PROFILE ME SIRVIÓ PARA EJECUTAR TESTS POR CATEGORIA con mvn -P profileName install por ej. -->
+	<profiles>
+	
+		<!-- 
+		<profile>
+			<id>none</id>
+			<properties>
+				<test.groups>!com.company.classification.TestJUnitCategory$AllTest</test.groups> //puedo usar ! para declarar que sean diff
+			</properties>
+		</profile>
+		-->
+		<profile>
+			<id>SlowTests</id>
+			<properties>
+				<test.groups>com.example.junitmockitopowermock.mavenwithtests.categories.CatSlowTests</test.groups>
+			</properties>
+		</profile>
+		<profile><!-- we put the plugin inside the profile -->
+			<id>CatSlowTests</id>
+			<build>
+				<plugins>
+					<plugin>
+		            	<groupId>org.apache.maven.plugins</groupId>
+		                <artifactId>maven-surefire-plugin</artifactId>
+		                <!--<version>2.22.2</version>-->
+		                <!-- 
+		                <dependencies>
+			            	<dependency>
+			                    <groupId>org.apache.maven.surefire</groupId>
+			                    <artifactId>common-junit48</artifactId>
+			                    <version>2.17</version>
+			                </dependency>
+			            </dependencies>
+		                 -->
+						<!--
+		                 <configuration>
+							<excludedGroups>my.category.NonSlowTest</excludedGroups>
+						</configuration>
+						-->
+		            </plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+	</profiles>
+	
+	
+	
+	
+
+</project>

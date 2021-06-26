@@ -1,0 +1,28 @@
+server:
+    port: 8080
+    #servlet:
+      #context-path: /ui
+      #session:
+        #cookie:
+          #name: UISESSION
+
+security:
+  #basic:
+    #enabled: false
+  oauth2:
+    client:
+      clientId: SampleClientId
+      clientSecret: secret
+      accessTokenUri: http://localhost:8081/auth/oauth/token #URI to obtain the Access Tokens (va al AS)
+      userAuthorizationUri: http://localhost:8081/auth/oauth/authorize #authorization URI that users will be redirected to (va al AS)
+      #in our example here, we rolled out our Authorization Server, but of course we can also use other, third-party providers such as Facebook or GitHub.
+    resource:
+      #id: 
+      user-info-uri: http://localhost:8081/auth/user/me #URI of user endpoint to obtain current user details (va al RS)
+      #token-type: 
+
+
+spring:
+  main:
+    allow-bean-definition-overriding: true #se seteó para resolver un problema que no entendimos
+

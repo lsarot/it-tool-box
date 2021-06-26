@@ -1,0 +1,74 @@
+version: '3.8'
+# Una vez creadas las imágenes de los servicios, de alguna manera tenemos que usarlas para crear los contenedores en los que se ejecutarán estos servicios.
+# Docker ofrece la herramienta docker-compose, que nos ahorrará ejecutar un comando para levantar cada contenedor, que en este ejemplo sólo serían tres, pero para casos con muchos más servicios, nos permite centralizar la configuración de despliegue, lo cuál es mucho más práctico.
+# La sintaxis de este fichero es bastante sencilla, y podemos alojarlo donde queramos, ya que lo único que necesitamos son las imágenes creadas anteriormente
+# Es una buena práctica crear los servicios dentro de una red, lo que permitirá que los servicios que se ejecuten dentro de ella tendrán acceso a todos los puertos de los servicios que se estén ejecutando dentro de ella (por eso no necesitamos la propiedad EXPOSE en los Dockerfile).
+
+# docker compose up --build --force-recreate
+
+services:
+    spring-config-server:
+        container_name: spring-config-server-leo
+        build:
+            context: spring-config-server-BACKUP
+            dockerfile: Dockerfile
+        image: spring-config-server:latest
+        ports:
+            - 8888:8888
+        networks:
+            - spring-cloud-config-network
+        #healthcheck:
+            #test: ["CMD", "curl", "-f", "http://localhost:8888/login"]
+            #test: ["CMD", "curl", "-f", "http://www.google.com"]
+            #test: "${DOCKER_HEALTHCHECK_TEST:-curl localhost:8888/login}"
+            #start_period: "5s"
+            #interval: "10s"
+            #timeout: "3s"
+            #retries: 3
+    spring-config-client:
+        container_name: spring-config-client-leo
+        build:
+            context: spring-config-client-BACKUP
+            dockerfile: Dockerfile
+        image: spring-config-client:latest
+        ports:
+            - 8887:8080
+        networks:
+            - spring-cloud-config-network
+        depends_on:
+            - spring-config-server
+            #spring-config-server:
+                #condition: service_healthy
+        restart: on-failure:1
+        environment:
+            #----- Set as json with application.properties key format
+            #SPRING_APPLICATION_JSON: '{
+            #    "spring.datasource.url": "jdbc:mysql://db:3306/table",
+            #}'
+            - SPRING_CONFIG_IMPORT=optional:configserver:$${SPRING_CLOUD_CONFIG_URI:http://spring-config-server-leo:8888}
+            #ENV VARS WILL OVERRIDE application.[yml|properties] PROPERTIES
+            #----- TO POINT FROM CONTAINER TO HOST MACHINE
+            #- SPRING_CONFIG_IMPORT=optional:configserver:http://host.docker.internal:8888   (ok)
+            #- SPRING_CONFIG_IMPORT=optional:configserver:http://docker.for.mac.localhost:8888   (ok)
+            #----- TO POINT INSIDE THE COINTAINERS' SHARED NETWORK
+            #- SPRING_CONFIG_IMPORT=optional:configserver:http://spring-config-server-leo:8888   (ok)
+            #- SPRING_CONFIG_IMPORT=optional:configserver:http://spring-config-server:8888   (ok)
+            #----- The URL directly, works on SB 2.4.0 and SCloud < 2020.0.0-M5   (NO on SB 2.5.0 and SCloud 2020.0.2)
+            #- SPRING_CONFIG_IMPORT=http://host.docker.internal:8888
+            #- SPRING_CONFIG_IMPORT=http://docker.for.mac.localhost:8888
+            #- SPRING_CONFIG_IMPORT=http://spring-config-server-leo:8888
+            #- SPRING_CONFIG_IMPORT=http://spring-config-server:8888
+networks:
+    spring-cloud-config-network:
+        driver: bridge
+
+
+# GUIDE:
+#version: Specifies which format version should be used. This is a mandatory field.
+#services: Each object in this key defines a service, a.k.a container. This section is mandatory.
+#    build: If given, docker-compose is able to build an image from a Dockerfile
+#        context: If given, it specifies the build-directory, where the Dockerfile is looked-up.
+#        dockerfile: If given, it sets an alternate name for a Dockerfile.
+#    image: Tells Docker which name it should give to the image when build-features are used. Otherwise, it is searching for this image in the library or remote-registry.
+#    networks: This is the identifier of the named networks to use. A given name-value must be listed in the networks section.
+#networks: In this section, we're specifying the networks available to our services. In this example, we let docker-compose create a named network of type ‘bridge' for us. If the option external is set to true, it will use an existing one with the given name.

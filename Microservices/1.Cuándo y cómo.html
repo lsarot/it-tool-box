@@ -1,0 +1,1582 @@
+<!doctype html><!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="es-es" > <![endif]--><!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="es-es" >        <![endif]--><!--[if IE 8]>    <html class="no-js lt-ie9" lang="es-es" >               <![endif]--><!--[if gt IE 8]><!--><html class="no-js" lang="es-es"><!--<![endif]--><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="author" content="Redacción PowerData">
+    <meta name="description" content="La arquitectura de microservicios podrían revolucionar el diseño, la implementación y la operación de las aplicaciones. ¿Pero cómo construyes un microservicio?">
+    <meta name="generator" content="HubSpot">
+    <title>Cuándo y cómo deberías utilizar una arquitectura de microservicios</title>
+    <link rel="shortcut icon" href="//cdn2.hubspot.net/hub/239039/favicon.ico">
+    
+
+    <script src="/hs/hsstatic/jquery-libs/static-1.1/jquery/jquery-1.7.1.js"></script>
+<script>hsjQuery = window['jQuery'];</script>
+    <meta property="og:description" content="La arquitectura de microservicios podrían revolucionar el diseño, la implementación y la operación de las aplicaciones. ¿Pero cómo construyes un microservicio?">
+    <meta property="og:title" content="Cuándo y cómo deberías utilizar una arquitectura de microservicios">
+    <meta name="twitter:description" content="La arquitectura de microservicios podrían revolucionar el diseño, la implementación y la operación de las aplicaciones. ¿Pero cómo construyes un microservicio?">
+    <meta name="twitter:title" content="Cuándo y cómo deberías utilizar una arquitectura de microservicios">
+
+    
+
+    
+    <style>
+a.cta_button{-moz-box-sizing:content-box !important;-webkit-box-sizing:content-box !important;box-sizing:content-box !important;vertical-align:middle}.hs-breadcrumb-menu{list-style-type:none;margin:0px 0px 0px 0px;padding:0px 0px 0px 0px}.hs-breadcrumb-menu-item{float:left;padding:10px 0px 10px 10px}.hs-breadcrumb-menu-divider:before{content:'›';padding-left:10px}.hs-featured-image-link{border:0}.hs-featured-image{float:right;margin:0 0 20px 20px;max-width:50%}@media (max-width: 568px){.hs-featured-image{float:none;margin:0;width:100%;max-width:100%}}.hs-screen-reader-text{clip:rect(1px, 1px, 1px, 1px);height:1px;overflow:hidden;position:absolute !important;width:1px}
+</style>
+
+<link rel="stylesheet" href="/hs/hsstatic/BlogSocialSharingSupport/static-1.16/bundles/project.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/hs/hsstatic/AsyncSupport/static-1.94/sass/rss_post_listing.css">
+<link rel="stylesheet" href="/hs/hsstatic/AsyncSupport/static-1.94/sass/comments_listing_asset.css">
+    
+
+    
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript">
+  WebFontConfig = {
+    google: { families: [ 'Gudea:400,700:latin' ] }
+  };
+  (function() {
+    var wf = document.createElement('script');
+    wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+      '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+    wf.type = 'text/javascript';
+    wf.async = 'true';
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(wf, s);
+  })(); </script>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W5W8XH9');</script>
+<!-- End Google Tag Manager -->
+<link rel="amphtml" href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios?hs_amp=true">
+
+<meta property="og:image" content="https://blog.powerdata.es/hubfs/images/arquitectura%20de%20microservicios.jpg#keepProtocol">
+<meta property="og:image:width" content="1906">
+<meta property="og:image:height" content="1573">
+
+<meta name="twitter:image" content="https://blog.powerdata.es/hubfs/images/arquitectura%20de%20microservicios.jpg#keepProtocol">
+
+
+<meta property="og:url" content="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="canonical" href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios">
+
+<meta property="og:type" content="article">
+<link rel="alternate" type="application/rss+xml" href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/rss.xml">
+<meta name="twitter:domain" content="blog.powerdata.es">
+<script src="//platform.linkedin.com/in.js" type="text/javascript">
+    lang: es_ES
+</script>
+
+<meta http-equiv="content-language" content="es-es">
+<link rel="stylesheet" href="//cdn2.hubspot.net/hub/7052064/hub_generated/template_assets/1619527767270/hubspot/hubspot_default/shared/responsive/layout.min.css">
+
+
+<link rel="stylesheet" href="https://blog.powerdata.es/hs-fs/hub/239039/hub_generated/template_assets/29557447852/1595818566210/Plantillas/Custom/Page/Webtestana/Web_2020_nueva/Home/Symphony-style-copia.min.css">
+
+
+    <script src="https://blog.powerdata.es/hs-fs/hub/239039/hub_generated/template_assets/29354687116/1589404220335/Marketplace/Web_Canopy_Studio/Symphony_Philharmonic_Pack/Coded_Files/CompanyMain-1589404220079.min.js"></script>
+    
+
+</head>
+<body class="blog two   hs-content-id-5310609648 hs-blog-post hs-content-path-el-valor-de-la-gestion-de-datos-cuando-y-como-debe hs-content-name-cuándo-y-cómo-deberías-utilizar-una-arquitectura-d hs-blog-name-el-valor-de-la-gestión-de-datos hs-blog-id-3394331016" style="">
+    <div class="header-container-wrapper">
+    <div class="header-container container-fluid">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-raw_jinja " style="" data-widget-type="raw_jinja" data-x="0" data-w="12">
+
+
+
+
+
+
+<style type="text/css">
+
+
+
+
+
+
+
+
+
+
+</style></div><!--end widget-span -->
+
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget " style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_147022751158822705" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><style>
+
+.page-center {
+  max-width: 1100px!important;
+}
+</style>
+
+
+
+
+
+
+
+
+  
+<style>
+.page-header {
+  position: fixed;
+}
+#page-header {
+  position: fixed;
+}
+</style>
+
+
+
+<script type="text/javascript">
+$( document ).ready(function() {
+$(window).scroll(function() {
+
+if ($('.page-header').css("position") == "fixed") {
+    if (!$(window).scrollTop() == 0) {
+        $(document.getElementById('page-header')).addClass ('page-header-scroll');
+        duration = 2000;
+        $('.company-logo img')
+            .css('height',"56px");
+        $('.company-logo img')
+            .css('width',"auto");
+        $('.company-logo img').fadeIn('slow');
+        $('.company-logo').css("padding", "2px 0");
+        $('.body-container-wrapper').css('padding-top', 0 + 'px');
+
+    }
+    else {
+        $(document.getElementById('page-header')).removeClass ('page-header-scroll');
+        duration = 2000;
+        $('.company-logo img')
+            .css('height',"initial");
+        $('.company-logo img')
+            .css('width',"auto");
+        $('.company-logo').css("padding", "0");
+        $('.body-container-wrapper').css('padding-top', $('.top-header').height() + $('.page-header').height() - 5 + 'px');
+
+    }
+}
+});
+
+if ($('.page-header').css("position") == "fixed") {
+    $('.body-container-wrapper').css('padding-top', $('.top-header').height() + $('.page-header').height() + 'px');
+}
+});
+
+</script>
+
+
+
+
+
+
+
+
+<style>
+
+
+body, p {
+ font-family: Open Sans, sans-serif;
+}
+
+
+
+
+h1, h2, h3, h4, h5, h6 {
+ font-family: Open Sans, sans-serif;
+}
+
+</style>
+
+
+
+
+
+
+<style>
+
+body, p {
+  font-weight: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+.filled-button, .bordered-button, .bordered-button-harmony,
+.bordered-button-white, .hs-menu-wrapper.hs-menu-flow-horizontal> ul li a div,
+.home .hs-rss-item.hs-with-featured-image .hs-rss-description a, .hs-button.primary {
+  border-radius: 10px!important;
+}
+</style>
+
+
+
+
+
+
+
+<script>
+$( document ).ready(function() {
+  $('.icon-wrapper').addClass('circle-border');
+});
+</script>
+
+
+
+
+
+
+
+<div class="css-mockup">
+
+
+<p>{% set baseFontFamily = "Open Sans" %} /* Add the font family you wish to use. You may need to import it above. */</p>
+<p>{% set headerFontFamily = "Open Sans" %} /* This affects only headers on the site. Add the font family you wish to use. You may need to import it above. */</p>
+
+  
+  <p>{% set textColor = "#565656" %} /* This sets the universal color of dark text on the site */</p>
+  <p>{% set pageCenter = "1100px" %} /* This sets the width of the website */</p>
+  <p>{% set headerType = "fixed" %} /* To make this a fixed header, change the value to "fixed" - otherwise, set it to "static" */</p>
+<p>{% set lightGreyColor = "#f7f7f7" %} /* This affects all grey background sections */</p>
+
+  <p>{% set baseFontWeight = "normal" %} /* More than likely, you will use one of these values (higher = bolder): 300, 400, 700, 900 */</p>
+  <p>{% set headerFontWeight = "normal" %} /* For Headers; More than likely, you will use one of these values (higher = bolder): 300, 400, 700, 900 */</p>
+  <p>{% set buttonRadius = '10px' %} /* "0" for square edges, "10px" for rounded edges, "40px" for pill shape; This will change all buttons */</p>
+<h3>After you have updated your stylesheet, make sure you turn this module off</h3>
+</div></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-3 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-raw_jinja " style="" data-widget-type="raw_jinja" data-x="0" data-w="12">
+
+
+
+
+<style>
+.css-mockup {
+  display: none!important;
+}
+
+.css-mockup-p1 {
+  display: none!important;
+}
+</style>
+</div><!--end widget-span -->
+
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-4 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-5 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell full-header" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-6 ">
+<div class="row-fluid ">
+<div id="page-header" class="span12 widget-span widget-type-cell page-header" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-7 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell page-center" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-1 ">
+<div class="row-fluid ">
+<div class="span3 widget-span widget-type-cell company-logo" style="" data-widget-type="cell" data-x="0" data-w="3">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-logo company-logo" style="" data-widget-type="logo" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590633552193488" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_logo" style="" data-hs-cos-general-type="widget" data-hs-cos-type="logo"><a href="https://www.powerdata.es/" id="hs-link-module_1590633552193488" style="border-width:0px;border:0px;"><img src="https://cdn2.hubspot.net/hub/239039/file-455953738.png?width=253&amp;name=file-455953738.png" class="hs-image-widget " style="width:253px;border-width:0px;border:0px;" width="253" alt="Power Data" title="Power Data" srcset="https://cdn2.hubspot.net/hub/239039/file-455953738.png?width=127&amp;name=file-455953738.png 127w, https://cdn2.hubspot.net/hub/239039/file-455953738.png?width=253&amp;name=file-455953738.png 253w, https://cdn2.hubspot.net/hub/239039/file-455953738.png?width=380&amp;name=file-455953738.png 380w, https://cdn2.hubspot.net/hub/239039/file-455953738.png?width=506&amp;name=file-455953738.png 506w, https://cdn2.hubspot.net/hub/239039/file-455953738.png?width=633&amp;name=file-455953738.png 633w, https://cdn2.hubspot.net/hub/239039/file-455953738.png?width=759&amp;name=file-455953738.png 759w" sizes="(max-width: 253px) 100vw, 253px"></a></span></div><!--end layout-widget-wrapper -->
+   </div><!--end widget-span -->
+    </div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+<div class="span9 widget-span widget-type-menu custom-menu-primary" style="" data-widget-type="menu" data-x="3" data-w="9">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590633552193489" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="menu"><div id="hs_menu_wrapper_module_1590633552193489" class="hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" role="navigation" data-sitemap-name="default" data-menu-id="28955715419" aria-label="Navigation Menu">
+ <ul>
+  <li class="hs-menu-item hs-menu-depth-1"><a href="https://www.powerdata.es/servicios20?hs_preview=lCmvQJhB-32896661281" role="menuitem">Servicios</a></li>
+  <li class="hs-menu-item hs-menu-depth-1"><a href="https://www.powerdata.es/soluciones20?hs_preview=fxXLSFHe-32896661295" role="menuitem">Soluciones</a></li>
+  <li class="hs-menu-item hs-menu-depth-1"><a href="https://www.powerdata.es/clientes20" role="menuitem">Clientes</a></li>
+  <li class="hs-menu-item hs-menu-depth-1"><a href="https://www.powerdata.es/empresa" role="menuitem">Nosotros</a></li>
+  <li class="hs-menu-item hs-menu-depth-1"><a href="https://www.powerdata.es/formacion20?hs_preview=uaMUzmXG-32894573780" role="menuitem">Formación</a></li>
+  <li class="hs-menu-item hs-menu-depth-1"><a href="https://www.powerdata.es/centro-de-recursos" role="menuitem">Recursos</a></li>
+ </ul>
+</div></span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+    </div><!--end header -->
+</div><!--end header wrapper -->
+
+<div class="body-container-wrapper">
+    <div class="body-container container-fluid">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell main-page" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell page-center" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-3 ">
+<div class="row-fluid ">
+<div class="span8 widget-span widget-type-cell blog-piece" style="" data-widget-type="cell" data-x="0" data-w="8">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-4 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-blog_content " style="" data-widget-type="blog_content" data-x="0" data-w="12">
+<div class="blog-section">
+    <div class="blog-post-wrapper cell-wrapper">
+        <div class="blog-section"><div class="blog-item">
+            <div class="blog-post-wrapper cell-wrapper">
+                <div class="section single-post-header">
+                    <h1><span id="hs_cos_wrapper_name" class="hs_cos_wrapper hs_cos_wrapper_meta_field hs_cos_wrapper_type_text" style="" data-hs-cos-general-type="meta_field" data-hs-cos-type="text">Cuándo y cómo deberías utilizar una arquitectura de microservicios</span></h1>
+                    
+                    <div id="hubspot-author_data" class="hubspot-editable" data-hubspot-form-id="author_data" data-hubspot-name="Blog Author">
+                        <span style="font-size:18px;">by  <strong><a class="author-link" href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/author/redacción-powerdata">Redacción PowerData</a></strong> on septiembre 7, 2017</span>
+                        <!--<span class="hs-author-label">Posted by</span>
+                        
+                            <a class="author-link" href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/author/redacción-powerdata">Redacción PowerData</a> on 6/09/17 21:00
+                            
+                            -->
+                        
+                    </div>
+                    
+                </div>
+                
+                <div class="section post-body">
+                    <span id="hs_cos_wrapper_post_body" class="hs_cos_wrapper hs_cos_wrapper_meta_field hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="meta_field" data-hs-cos-type="rich_text"><p><span style="font-weight: 400;">La </span>arquitectura de microservicios<span style="font-weight: 400;"> está recibiendo mucha atención últimamente, y esto no es una casualidad.. Hay algunas grandes empresas como <strong>Netflix y Amazon que han explicado cómo están utilizando una </strong></span><strong>arquitectura de microservicios</strong><span style="font-weight: 400;"><strong> para poder escalar sus servicios y garantizar que pueden prestarlos de forma continua y sin interrupciones</strong>.</span></p>
+<!--more--><img src="https://blog.powerdata.es/hs-fs/hubfs/images/arquitectura%20de%20microservicios.jpg?width=640&amp;name=arquitectura%20de%20microservicios.jpg" alt="arquitectura de microservicios" width="640" style="display: block; margin-left: auto; margin-right: auto; width: 640px;" title="arquitectura de microservicios" caption="false" data-constrained="true" srcset="https://blog.powerdata.es/hs-fs/hubfs/images/arquitectura%20de%20microservicios.jpg?width=320&amp;name=arquitectura%20de%20microservicios.jpg 320w, https://blog.powerdata.es/hs-fs/hubfs/images/arquitectura%20de%20microservicios.jpg?width=640&amp;name=arquitectura%20de%20microservicios.jpg 640w, https://blog.powerdata.es/hs-fs/hubfs/images/arquitectura%20de%20microservicios.jpg?width=960&amp;name=arquitectura%20de%20microservicios.jpg 960w, https://blog.powerdata.es/hs-fs/hubfs/images/arquitectura%20de%20microservicios.jpg?width=1280&amp;name=arquitectura%20de%20microservicios.jpg 1280w, https://blog.powerdata.es/hs-fs/hubfs/images/arquitectura%20de%20microservicios.jpg?width=1600&amp;name=arquitectura%20de%20microservicios.jpg 1600w, https://blog.powerdata.es/hs-fs/hubfs/images/arquitectura%20de%20microservicios.jpg?width=1920&amp;name=arquitectura%20de%20microservicios.jpg 1920w" sizes="(max-width: 640px) 100vw, 640px"><br>
+<p><strong>Una arquitectura de microservicios</strong><span style="font-weight: 400;"><strong> tiene más sentido cuando la comparamos con el diseño de aplicaciones monolíticas</strong>.</span></p>
+<p>&nbsp;</p>
+<p style="text-align: center;"><span style="font-weight: 400;"><!--HubSpot Call-to-Action Code --><span class="hs-cta-wrapper" id="hs-cta-wrapper-fd0d4bdd-4f05-4a07-a234-70129feaf347"><span class="hs-cta-node hs-cta-fd0d4bdd-4f05-4a07-a234-70129feaf347" id="hs-cta-fd0d4bdd-4f05-4a07-a234-70129feaf347"><!--[if lte IE 8]><div id="hs-cta-ie-element"></div><![endif]--><a href="https://cta-redirect.hubspot.com/cta/redirect/239039/fd0d4bdd-4f05-4a07-a234-70129feaf347" target="_blank"><img class="hs-cta-img" id="hs-cta-img-fd0d4bdd-4f05-4a07-a234-70129feaf347" style="border-width:0px;" src="https://no-cache.hubspot.com/cta/default/239039/fd0d4bdd-4f05-4a07-a234-70129feaf347.png" alt="Descárgate la guía &quot;SOA y Data Services: Potentes aliados&quot;&nbsp;"></a></span><script charset="utf-8" src="/hs/cta/cta/current.js"></script><script type="text/javascript"> hbspt.cta._relativeUrls=true;hbspt.cta.load(239039, 'fd0d4bdd-4f05-4a07-a234-70129feaf347', {"region":"na1"}); </script></span><!-- end HubSpot Call-to-Action Code --></span></p>
+<p>&nbsp;</p>
+<p><span style="font-weight: 400;">En el diseño arquitectónico monolítico creamos una enorme y pesada aplicación con todos los módulos estrechamente acoplados dentro de un solo ejecutable que se despliega típicamente en un servidor web o de aplicaciones. Sin embargo, este <a href="/el-valor-de-la-gestion-de-datos/integration-services-el-desafio-de-la-arquitectura-hibrida">diseño arquitectónico</a> tiene algunos<strong> inconvenientes que han permitido que el uso de la </strong></span><strong>arquitectura de microservicios</strong><span style="font-weight: 400;"><strong> adquiera popularidad</strong>:</span></p>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">No hay actualizaciones frecuentes y fáciles.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Problemas para la distribución continua.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Equipo y proyecto difícil de gestionar.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Escalabilidad y rendimiento costosos.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Falta de diversidad tecnológica.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">No es fácil reemplazar los componentes.</span></li>
+</ul>
+<p>&nbsp;</p>
+<h2><strong>Qué es una arquitectura de microservicios</strong></h2>
+<p><span style="font-weight: 400;"><strong>Un estilo de arquitectura de microservicios obtiene una configuración donde los componentes de la aplicación son aplicaciones independientes.</strong> Estos componentes independientes de la aplicación se hablan entre sí utilizando RMI (Remote Method Invocation), Restful Web Services o Push Messaging.</span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><strong>Al diseñar sistemas en una arquitectura de microservicios, deberíamos identificar los componentes independientes.</strong> Estos componentes serán mini aplicaciones, que se desarrollarán por separado. Seguirán su propio ciclo de desarrollo y despliegue.</span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;">En una configuración general <strong>podemos tener escenarios donde necesitamos datos de varios componentes para una sola solicitud</strong>. Idealmente, tendremos una pasarela API o controlador frontal que agrega los datos de estos componentes y los devuelve.</span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><strong>También debemos tener una comunicación entre componentes</strong>. Los componentes pueden comunicarse a través de las API de REST o Messaging o RMI (Remote Method Invocation).</span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><strong>Las características de una aplicación basada en arquitectura de microservicios son las siguientes</strong>:</span></p>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Servicio habilitado, ejecución independiente de componentes.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Ejecución independiente de componentes en torno a algunas capacidades de negocio.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Mentalidad de producto en lugar de proyecto.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Componentes inteligentes que utilizan canales de comunicación simples como el simple protocolo RESTish o la cola de mensajes ligeros.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Estándares descentralizados. Cada componente independiente puede utilizar su estándar exclusivo para desarrollo y despliegue.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Gestión descentralizada de datos. Cada componente individual tiene su propio almacenamiento de datos.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Gestión automatizada de la infraestructura. Para el despliegue de componentes independientes, necesitamos confiar en la gestión automatizada de la infraestructura para así reducir la complejidad.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Diseño de aplicación teniendo en cuenta posibles fallos. Hay varias partes móviles independientes en las aplicaciones. En caso de que el receptor no obtenga una respuesta, debe gestionarse correctamente.</span></li>
+</ul>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Diseño evolutivo para obtener el mejor sistema de descomposición posible, que pueda ser sustituido y actualizado sin afectar a su alrededor.</span></li>
+</ul>
+<p>&nbsp;</p>
+<h2><strong>Cuando utilizar una arquitectura de microservicios</strong></h2>
+<p><span style="font-weight: 400;"><strong>Deberíamos utilizar una arquitectura de microservicios para cualquier producto o proyecto con estos dos enfoques</strong>:</span></p>
+<ul>
+<li style="font-weight: 400;"><strong>Únicamente monolítico o con un primer enfoque monolítico</strong><span style="font-weight: 400;">. Normalmente, cuando una aplicación monolítica tiene éxito o necesita ayuda para escalar y mejorar el rendimiento, podemos optar por una arquitectura de microservicios de dos maneras:</span></li>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Extender los componentes modulares bien diseñados de la aplicación monolítica.</span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Crear la aplicación de <a href="/el-valor-de-la-gestion-de-datos/que-es-soa-y-cual-es-su-diferencia-con-los-microservicios">microservicios</a> desde cero y volcar en ella la aplicación monolítica existente.</span></li>
+</ul>
+<li style="font-weight: 400;"><strong>Un primer enfoque de microservicios</strong><span style="font-weight: 400;">. Debemos optar por la primera aproximación a los microservicios cuando:</span></li>
+<ul>
+<li style="font-weight: 400;"><span style="font-weight: 400;">La modularidad y la descentralización son un aspecto importante desde el inicio de cualquier proyecto.</span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Prevemos que la aplicación tendrá un alto volumen de transacciones o de tráfico.</span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Tenemos preferencia por beneficios a largo plazo en comparación con los de corto plazo.</span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Disponemos de un conjunto adecuado de personas para diseñar, desarrollar e implementar aplicaciones rápidamente, sobre todo durante la fase inicial.</span></li>
+<li style="font-weight: 400;"><span style="font-weight: 400;">Tenemos el compromiso de utilizar herramientas y tecnologías de vanguardia.</span></li>
+</ul>
+</ul>
+<br>
+<h2><strong>Cómo utilizar una arquitectura de microservicios</strong></h2>
+<p><span style="font-weight: 400;">Desafortunadamente, <strong>la mayor parte de la información disponible sobre arquitectura de microservicios explica por qué deberían usarse, pero no cómo hacerlo</strong>. Es bueno saber que los microservicios podrían revolucionar el diseño, la implementación y la operación de las aplicaciones. ¿Pero exactamente cómo construyes un microservicio individual? <strong>Es necesario comprender los componentes fundamentales de un microservicio si deseas que el resultado funcione correctamente y no acabe pareciendo la misma aplicación monolítica antigua con una nueva capa de pintura.</strong></span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;"><br></span><span style="font-weight: 400;">Estos son los <strong>cinco elementos que un microservicio necesitará antes de que pueda utilizarse en una arquitectura de aplicación distribuida</strong>:</span></p>
+<ol>
+<li style="font-weight: 400;"><strong>Funcionalidad con un alcance adecuado</strong><span style="font-weight: 400;">. El primer elemento de un microservicio es definir lo que debe hacer. Una forma de definir el ámbito adecuado es particionar los servicios a lo largo de las líneas de funcionalidad lógica. Otro enfoque de alcance es reflejar la estructura de la organización de desarrollo. Un tercer enfoque es minimizar un servicio a la cantidad de código que podría ser reintroducido por el equipo en un período de dos semanas.</span></li>
+<li style="font-weight: 400;"><strong>Preparación de una API</strong><span style="font-weight: 400;">. Una vez que descomponemos una aplicación en múltiples servicios que cooperan, ¿cómo deben hablar esos servicios entre sí? Normalmente, esto se hace con llamadas a API de servicios web REST, aunque también pueden utilizar otros mecanismos de transporte. Una buena idea es evitar saltar a la codificación de la API de forma inmediata. En su lugar es mejor hacer algún trabajo en papel o pizarra para definir lo que un servicio específico debe exponer para funcionar correctamente. </span></li>
+<li style="font-weight: 400;"><strong>Gestión del tráfico</strong><span style="font-weight: 400;">. Desde la perspectiva del servicio de llamada, siempre debe realizar un seguimiento de sus llamadas y estar preparado para terminar si la respuesta toma demasiado tiempo. Desde la perspectiva del servicio llamado, el diseño de API debe incluir la posibilidad de enviar una respuesta que indique sobrecarga. Los servicios deben ser capaces también de generar y matar nuevas instancias de servicio según sea necesario para acomodar variaciones en la carga de tráfico.</span></li>
+<li style="font-weight: 400;"><strong>Descarga de datos</strong><span style="font-weight: 400;">. Tener necesidad de una operación continua es muy diferente de lo que necesitan las aplicaciones tradicionales, que a menudo dejan de funcionar si falla la infraestructura subyacente. Para asegurarse de que los usuarios pueden seguir trabajando cuando falla una instancia, se pueden migrar datos específicos del usuario fuera de las instancias de servicio a un sistema compartido de almacenamiento redundante accesible desde todas las instancias de servicio. Otro enfoque de descarga de almacenamiento es insertar un sistema compartido de caché basado en memoria entre un servicio dado y el almacenamiento asociado con ese servicio.</span></li>
+<li style="font-weight: 400;"><strong>Monitorización</strong><span style="font-weight: 400;">. El sistema de monitorización de una aplicación basada en una arquitectura de microservicios debe permitir el cambio continuo de recursos, ser capaz de capturar datos de monitorización en una ubicación central y mostrar información que refleje la naturaleza con frecuencia cambiante de las aplicaciones de microservicios.</span></li>
+</ol>
+<p>&nbsp;</p>
+<p style="text-align: center;"><span style="font-weight: 400;"><!--HubSpot Call-to-Action Code --><span class="hs-cta-wrapper" id="hs-cta-wrapper-b99aa91b-28c8-481f-9ecb-c8940cb06dad"><span class="hs-cta-node hs-cta-b99aa91b-28c8-481f-9ecb-c8940cb06dad" id="hs-cta-b99aa91b-28c8-481f-9ecb-c8940cb06dad"><!--[if lte IE 8]><div id="hs-cta-ie-element"></div><![endif]--><a href="https://cta-redirect.hubspot.com/cta/redirect/239039/b99aa91b-28c8-481f-9ecb-c8940cb06dad"><img class="hs-cta-img" id="hs-cta-img-b99aa91b-28c8-481f-9ecb-c8940cb06dad" style="border-width:0px;" src="https://no-cache.hubspot.com/cta/default/239039/b99aa91b-28c8-481f-9ecb-c8940cb06dad.png" alt="New Call-to-action"></a></span><script charset="utf-8" src="/hs/cta/cta/current.js"></script><script type="text/javascript"> hbspt.cta._relativeUrls=true;hbspt.cta.load(239039, 'b99aa91b-28c8-481f-9ecb-c8940cb06dad', {"region":"na1"}); </script></span><!-- end HubSpot Call-to-Action Code --></span></p></span>
+                </div>
+                <span id="hs_cos_wrapper_blog_social_sharing" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_blog_social_sharing" style="" data-hs-cos-general-type="widget" data-hs-cos-type="blog_social_sharing">
+<div class="hs-blog-social-share">
+    <ul class="hs-blog-social-share-list">
+        
+        <li class="hs-blog-social-share-item hs-blog-social-share-item-twitter">
+            <!-- Twitter social share -->
+            <a href="https://twitter.com/share" class="twitter-share-button" data-lang="es" data-url="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios" data-size="medium" data-text="Cuándo y cómo deberías utilizar una arquitectura de microservicios">Tweet</a>
+        </li>
+        
+
+        
+        <li class="hs-blog-social-share-item hs-blog-social-share-item-linkedin">
+            <!-- LinkedIn social share -->
+            <script type="IN/Share" data-url="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios" data-showzero="true" data-counter="right"></script>
+        </li>
+        
+
+        
+        <li class="hs-blog-social-share-item hs-blog-social-share-item-facebook">
+            <!-- Facebook share -->
+            <div class="fb-like" data-href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios" data-layout="button" data-action="like" data-show-faces="false" data-share="true" data-width="120"></div>
+        </li>
+        
+    </ul>
+ </div>
+
+</span>
+                
+                     <p id="hubspot-topic_data"> Topics:
+                        
+                            <a class="topics" href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-services">Data Services</a>
+                        
+                     </p>
+                
+            </div>
+        </div></div>
+
+
+        <!-- Optional: Blog Author Bio Box -->
+        
+
+    </div>
+</div></div>
+
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+<div class="span4 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="8" data-w="4">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-5 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget sombra-sidebar-item1" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1594359058321258" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+
+
+<link href="https://fonts.googleapis.com/css?family=Source+sans+serif" rel="stylesheet" type="text/css">
+<style type="text/css">
+*{ padding:0px;
+Margin:0px;
+}
+#header1 { margin:auto;
+Width:100%;} 
+.blog_sharing1 a span {
+display: none;
+}
+.blog_sharing1 {
+margin: 0 2px;
+padding-top: 15px;    /* padin para centrar íconos */
+padding-bottom: 15px;
+padding-left: 80px;
+padding-right: 15px; 
+text-decoration: none;
+}
+.blog_sharing1 > div:last-of-type {
+/* text-align: right;*/
+}
+.blog_sharing1 a:before {
+display: inline-block;
+margin-right: 15px; /* separación entre íconos */
+font: normal normal normal 40px/1 FontAwesome;
+/*text-align: center;*/
+}
+.blog_sharing1 a:hover {
+opacity: 0.8;
+}
+.blog_sharing1 a p {
+/*content: "\f0e1";
+font-size:30px;*/
+text-align:center;
+font: normal normal normal 30px/1 FontAwesome;
+color:#3c3c3b;
+font-family: sans-serif;
+}
+.blog_sharing1 .tipoletra div p {
+font-family: sans-serif;
+text-align:left;
+font-size: 15px;
+/*   <p class="tipoletra">Síguenos<br><br/></p> */ 
+/*padding-right: 15px;  */
+text-decoration: none;
+}
+.blog_sharing1 a.share_linkedin1:before {
+content: "\f0e1";
+}
+.blog_sharing1 a.share_twitter1:before {
+content: "\f099";
+}
+.blog_sharing1 a.share_facebook1:before {
+content: "\f09a";
+}
+.blog_sharing1 a.share_email1:before {
+content: "\f003";
+}
+.blog_sharing1 a.share_reddit1:before {
+content: "\f281";
+}
+.blog_sharing1 a.share_vk1:before {
+content: "\f189";
+}
+.blog_sharing1 a.share_pinterest1:before {
+content: "\f231";
+}
+.blog_sharing1 a.share_google1:before {
+content: "\f0d5";
+}
+.blog_sharing1 a.share_tumblr1:before {
+content: "\f173";
+}
+/*<a href="">Síguenos</a><br/> link en verde*/
+/*<a class="share_email" href="mailto:?body=https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios" title="email"><span>Email</span></a> */
+</style>
+
+
+<div class="">
+<h3></h3>
+<div class="blog_sharing1 hs-blog-social-share1 clearfix1">
+<a class="share_facebook1" href="https://www.facebook.com/PowerDataAmericas" title="facebook" target="_blank" width="600,height=400"><span>Facebook</span></a>
+<a class="share_twitter1" href="https://twitter.com/PowerDataGrupo" title="twitter" target="_blank" width="600,height=400"><span>Twitter</span></a>
+<a class="share_linkedin1" href="https://www.linkedin.com/company/powerdata/" title="linkedin" target="_blank" width="600" height="400"><span>LinkedIn</span></a>
+</div>
+</div>
+
+</div>
+
+   </div><!--end widget-span -->
+    </div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-3 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v20" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1594359058321259" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-4 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget sombra-sidebar-item1" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1594359058321260" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-form" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+	
+
+ 
+
+	<span id="hs_cos_wrapper_module_1594359058321260_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_form" style="" data-hs-cos-general-type="widget" data-hs-cos-type="form"><h3 id="hs_cos_wrapper_module_1594359058321260_title" class="hs_cos_wrapper form-title" data-hs-cos-general-type="widget_field" data-hs-cos-type="text">¡Suscríbase!</h3>
+
+<div id="hs_form_target_module_1594359058321260"></div>
+
+
+
+
+
+
+
+
+
+</span>
+
+</div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-5 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v30" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1594359058321261" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-6 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-post_filter sombra-sidebar-item1" style="" data-widget-type="post_filter" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1594359058321262" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_post_filter" style="" data-hs-cos-general-type="widget" data-hs-cos-type="post_filter"><div class="block">
+  <h3>Blog Topic Cloud</h3>
+  <div class="widget-module">
+    <ul>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/big-data">Big Data <span class="filter-link-count" dir="ltr">(290)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-quality">Data Quality <span class="filter-link-count" dir="ltr">(153)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-management">Data Management <span class="filter-link-count" dir="ltr">(136)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/master-data-management">Master Data Management <span class="filter-link-count" dir="ltr">(125)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-integration">Data Integration <span class="filter-link-count" dir="ltr">(111)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/cloud">Cloud <span class="filter-link-count" dir="ltr">(108)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-security">Data Security <span class="filter-link-count" dir="ltr">(74)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-governance">Data Governance <span class="filter-link-count" dir="ltr">(70)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-masking">Data Masking <span class="filter-link-count" dir="ltr">(60)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/business-analytics">Business Analytics <span class="filter-link-count" dir="ltr">(59)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-migration">Data Migration <span class="filter-link-count" dir="ltr">(59)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/gestión-de-datos">Gestión de Datos <span class="filter-link-count" dir="ltr">(55)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/solvencia-ii">Solvencia II <span class="filter-link-count" dir="ltr">(26)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-services">Data Services <span class="filter-link-count" dir="ltr">(22)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-warehouse">Data Warehouse <span class="filter-link-count" dir="ltr">(22)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/requerimientos-de-basilea">Requerimientos de Basilea <span class="filter-link-count" dir="ltr">(18)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/noticias">Noticias <span class="filter-link-count" dir="ltr">(16)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/inteligencia-artificial">Inteligencia Artificial <span class="filter-link-count" dir="ltr">(12)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-analytics">Data Analytics <span class="filter-link-count" dir="ltr">(8)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/tendencias-2021">Tendencias 2021 <span class="filter-link-count" dir="ltr">(8)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-lake">Data Lake <span class="filter-link-count" dir="ltr">(7)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-driven">Data Driven <span class="filter-link-count" dir="ltr">(6)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/analitica-de-datos">analitica de datos <span class="filter-link-count" dir="ltr">(5)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/experiencia-del-cliente">Experiencia del cliente <span class="filter-link-count" dir="ltr">(4)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/modelos-predictivos">Modelos predictivos <span class="filter-link-count" dir="ltr">(4)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/customer-experience">customer experience <span class="filter-link-count" dir="ltr">(4)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/data-catalog">Data Catalog <span class="filter-link-count" dir="ltr">(3)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/machine-learning">Machine Learning <span class="filter-link-count" dir="ltr">(3)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/transformación-digital">Transformación digital <span class="filter-link-count" dir="ltr">(3)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/ventaja-analítica">Ventaja analítica <span class="filter-link-count" dir="ltr">(3)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/cloud-computing">cloud computing <span class="filter-link-count" dir="ltr">(3)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/customer-intelligence">customer intelligence <span class="filter-link-count" dir="ltr">(3)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/seguridad-de-datos">seguridad de datos <span class="filter-link-count" dir="ltr">(3)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/democratización-de-datos">democratización de datos <span class="filter-link-count" dir="ltr">(2)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/metadatos">metadatos <span class="filter-link-count" dir="ltr">(2)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/iot">IoT <span class="filter-link-count" dir="ltr">(1)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/visión-360">Visión 360 <span class="filter-link-count" dir="ltr">(1)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/analitica-aumentada">analitica aumentada <span class="filter-link-count" dir="ltr">(1)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/estrategia-360">estrategia 360 <span class="filter-link-count" dir="ltr">(1)</span></a>
+        </li>
+      
+        <li>
+          <a href="https://blog.powerdata.es/el-valor-de-la-gestion-de-datos/topic/internet-de-las-cosas">internet de las cosas <span class="filter-link-count" dir="ltr">(1)</span></a>
+        </li>
+      
+    </ul>
+    
+  </div>
+</div>
+</span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-7 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v30" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1594359245272342" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-8 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-post_listing sombra-sidebar-item1" style="" data-widget-type="post_listing" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_143871442253346686" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_post_listing" style="" data-hs-cos-general-type="widget" data-hs-cos-type="post_listing"><div class="block">
+  <h3>Popular Posts</h3>
+  <div class="widget-module">
+    <ul class="hs-hash-693310270-1619794273925">
+    </ul>
+  </div>
+</div>
+</span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v30" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1594359058321263" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget sombra-sidebar-item1" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1594359058321265" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-rich_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_1594359058321265_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="rich_text"><p><!--HubSpot Call-to-Action Code --><span class="hs-cta-wrapper" id="hs-cta-wrapper-b8d053dc-e3d6-47e2-8e85-361d25f9797e"><span class="hs-cta-node hs-cta-b8d053dc-e3d6-47e2-8e85-361d25f9797e" id="hs-cta-b8d053dc-e3d6-47e2-8e85-361d25f9797e"><!--[if lte IE 8]><div id="hs-cta-ie-element"></div><![endif]--><a href="https://cta-redirect.hubspot.com/cta/redirect/239039/b8d053dc-e3d6-47e2-8e85-361d25f9797e"><img class="hs-cta-img" id="hs-cta-img-b8d053dc-e3d6-47e2-8e85-361d25f9797e" style="border-width:0px;" src="https://no-cache.hubspot.com/cta/default/239039/b8d053dc-e3d6-47e2-8e85-361d25f9797e.png" alt="IR AL CENTRO DE   RECURSOS"></a></span><script charset="utf-8" src="/hs/cta/cta/current.js"></script><script type="text/javascript"> hbspt.cta._relativeUrls=true;hbspt.cta.load(239039, 'b8d053dc-e3d6-47e2-8e85-361d25f9797e', {"region":"na1"}); </script></span><!-- end HubSpot Call-to-Action Code --></p></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-1 ">
+<div class="row-fluid ">
+<div class="span5 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="5">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-blog_comments " style="" data-widget-type="blog_comments" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_blog_comments" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_blog_comments" style="" data-hs-cos-general-type="widget" data-hs-cos-type="blog_comments">
+<div class="section post-footer">
+    <div id="comments-listing" class="new-comments"></div>
+    
+      <div id="hs_form_target_54897dca-51c4-4733-9518-5e6f0c256d9f"></div>
+      
+      
+      
+    
+</div>
+
+</span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+<div class="span7 widget-span widget-type-custom_widget spacer_v50" style="" data-widget-type="custom_widget" data-x="5" data-w="7">
+<div id="hs_cos_wrapper_module_15956447945184146" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+    </div><!--end body -->
+</div><!--end body wrapper -->
+
+<div class="footer-container-wrapper">
+    <div class="footer-container container-fluid">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-1 ">
+<div class="row-fluid ">
+<div class="span11 widget-span widget-type-custom_widget spacer_v50" style="" data-widget-type="custom_widget" data-x="0" data-w="11">
+<div id="hs_cos_wrapper_module_159580268295988" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+<div class="span1 widget-span widget-type-custom_widget " style="" data-widget-type="custom_widget" data-x="11" data-w="1">
+<div id="hs_cos_wrapper_module_15942576309123682" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><a href="#" id="js_up" class="boton-subir">
+<!-- link del icono http://fontawesome.io/icon/rocket/ -->
+<i class="fa fa-arrow-up" aria-hidden="true"></i>
+</a>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous"></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v50" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_1595802867595212" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-3 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-global_group " style="" data-widget-type="global_group" data-x="0" data-w="12">
+<div class="" data-global-widget-path="generated_global_groups/29688191041.html"><div class="row-fluid-wrapper row-depth-1 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell footer" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell page-center" style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-3 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-cell " style="" data-widget-type="cell" data-x="0" data-w="12">
+
+<div class="row-fluid-wrapper row-depth-1 row-number-4 ">
+<div class="row-fluid ">
+<div class="span3 widget-span widget-type-cell footer-block" style="" data-widget-type="cell" data-x="0" data-w="3">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-header " style="" data-widget-type="header" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148709" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_header" style="" data-hs-cos-general-type="widget" data-hs-cos-type="header"><h4>Quienes Somos</h4></span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-2 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v20" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_15901938076151170" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-3 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-rich_text " style="" data-widget-type="rich_text" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148710" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="rich_text"><p><a href="https://www.powerdata.es/contacto20" rel=" noopener"><span style="font-size: 16px;">Contacto</span></a></p></span>
+</div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+<div class="span3 widget-span widget-type-cell footer-block" style="" data-widget-type="cell" data-x="3" data-w="3">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-4 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-header " style="" data-widget-type="header" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148712" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_header" style="" data-hs-cos-general-type="widget" data-hs-cos-type="header"><h4>Recursos</h4></span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-5 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v20" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_15902007949112687" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-6 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-rich_text " style="" data-widget-type="rich_text" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148713" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="rich_text"><p><span style="font-size: 16px;"><a href="https://www.powerdata.es/centro-de-recursos">Centro de Recursos</a></span></p>
+<p><br><a href="https://www.powerdata.es/protecdatos20?hs_preview=iEhqKNQc-32896661502" rel=" noopener"><span style="font-size: 16px;">Protección de Datos</span></a><br><br></p></span>
+</div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+<div class="span3 widget-span widget-type-cell footer-block" style="" data-widget-type="cell" data-x="6" data-w="3">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-7 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-header " style="" data-widget-type="header" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148715" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_header" style="" data-hs-cos-general-type="widget" data-hs-cos-type="header"><h4>Compañía</h4></span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-8 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v20" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_15902008031822705" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-9 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-rich_text " style="" data-widget-type="rich_text" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148716" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="rich_text"><p><span style="font-size: 16px;"><a href="https://www.powerdata.es/avisolegal20?hs_preview=PDgyDsGu-32896777677" rel=" noopener">Aviso Legal</a></span></p>
+<p><br><a href="https://www.powerdata.es/trabajanosotros20" rel=" noopener"><span style="font-size: 16px;">Trabaja con Nosotros</span></a></p></span>
+</div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+<div class="span3 widget-span widget-type-cell footer-block" style="" data-widget-type="cell" data-x="9" data-w="3">
+
+<div class="row-fluid-wrapper row-depth-2 row-number-10 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-header " style="" data-widget-type="header" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148718" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_header" style="" data-hs-cos-general-type="widget" data-hs-cos-type="header"><h4>Seguridad</h4></span></div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-11 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v20" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_15902008103402723" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-2 row-number-12 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-rich_text " style="" data-widget-type="rich_text" data-x="0" data-w="12">
+<div class="cell-wrapper layout-widget-wrapper">
+<span id="hs_cos_wrapper_module_1590190556148719" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="rich_text"><p><a href="https://www.powerdata.es/politicacookies20?hs_preview=TJMvBrAi-32896777693" rel=" noopener"><span style="font-size: 16px;">Política de Cookies</span></a></p></span>
+</div><!--end layout-widget-wrapper -->
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-1 ">
+<div class="row-fluid ">
+<div class="span12 widget-span widget-type-custom_widget spacer_v30" style="" data-widget-type="custom_widget" data-x="0" data-w="12">
+<div id="hs_cos_wrapper_module_15902007861292669" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+<div class="row-fluid-wrapper row-depth-1 row-number-2 ">
+<div class="row-fluid ">
+<div class="span4 widget-span widget-type-custom_widget " style="" data-widget-type="custom_widget" data-x="0" data-w="4">
+<div id="hs_cos_wrapper_module_1614019309664150" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-linked_image" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+    
+
+
+
+
+
+  
+
+
+
+<span id="hs_cos_wrapper_module_1614019309664150_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_linked_image" style="" data-hs-cos-general-type="widget" data-hs-cos-type="linked_image"><img src="https://blog.powerdata.es/hs-fs/hubfs/ana/IMG_WEB/Im%C3%A1genes%20en%20la%20Web/logo_pwd_white.png?width=400&amp;height=50&amp;name=logo_pwd_white.png" class="hs-image-widget " width="400" height="50" style="max-width: 100%; height: auto;" alt="PowerData" title="PowerData" srcset="https://blog.powerdata.es/hs-fs/hubfs/ana/IMG_WEB/Im%C3%A1genes%20en%20la%20Web/logo_pwd_white.png?width=200&amp;height=25&amp;name=logo_pwd_white.png 200w, https://blog.powerdata.es/hs-fs/hubfs/ana/IMG_WEB/Im%C3%A1genes%20en%20la%20Web/logo_pwd_white.png?width=400&amp;height=50&amp;name=logo_pwd_white.png 400w, https://blog.powerdata.es/hs-fs/hubfs/ana/IMG_WEB/Im%C3%A1genes%20en%20la%20Web/logo_pwd_white.png?width=600&amp;height=75&amp;name=logo_pwd_white.png 600w, https://blog.powerdata.es/hs-fs/hubfs/ana/IMG_WEB/Im%C3%A1genes%20en%20la%20Web/logo_pwd_white.png?width=800&amp;height=100&amp;name=logo_pwd_white.png 800w, https://blog.powerdata.es/hs-fs/hubfs/ana/IMG_WEB/Im%C3%A1genes%20en%20la%20Web/logo_pwd_white.png?width=1000&amp;height=125&amp;name=logo_pwd_white.png 1000w, https://blog.powerdata.es/hs-fs/hubfs/ana/IMG_WEB/Im%C3%A1genes%20en%20la%20Web/logo_pwd_white.png?width=1200&amp;height=150&amp;name=logo_pwd_white.png 1200w" sizes="(max-width: 400px) 100vw, 400px"></span>
+</div>
+
+</div><!--end widget-span -->
+<div class="span4 widget-span widget-type-custom_widget spacer_v30" style="" data-widget-type="custom_widget" data-x="4" data-w="4">
+<div id="hs_cos_wrapper_module_15902008860822798" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module widget-type-space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><span id="hs_cos_wrapper_module_spacer" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_space" style="" data-hs-cos-general-type="widget" data-hs-cos-type="space"></span></div>
+
+</div><!--end widget-span -->
+<div class="span4 widget-span widget-type-custom_widget " style="" data-widget-type="custom_widget" data-x="8" data-w="4">
+<div id="hs_cos_wrapper_module_15902003428972473" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module">
+
+
+<link href="https://fonts.googleapis.com/css?family=Source+sans+serif" rel="stylesheet" type="text/css">
+  
+<style type="text/css">
+*{ padding:0px;
+Margin:0px;
+}
+#header { margin:auto;
+Width:100%;}
+.blog_sharing a span {
+display: none;
+}
+.blog_sharing {
+margin: 0 2px;
+text-decoration: none;
+}
+.blog_sharing > div:last-of-type {
+text-align: right;
+}
+.blog_sharing a:before {
+display: inline-block;
+margin-right: 15px;
+font: 40px/1 FontAwesome;
+text-align: center;
+}
+.blog_sharing a:hover {
+opacity: 0.8;
+}
+.blog_sharing a p {
+/*content: "\f0e1";
+font-size:30px;*/
+text-align:left;
+font: 30px/1 Open Sans;
+color:#ffffff;
+float:left;
+margin-right: 15px;
+font-family: sans-serif;
+
+}
+.blog_sharing1 .tipoletra div p {
+font-family: sans-serif;
+text-align:left;
+font-size: 15px;
+/* <p class="tipoletra">Síguenos<br><br/></p>  */ 
+/* padin para centrar íconos */
+/*padding-right: 15px;  */
+text-decoration: none;
+}
+
+.blog_sharing a.share_linkedin1:before {
+content: "\f0e1";
+color:#ffffff;
+float:left;
+}
+.blog_sharing a.share_twitter:before {
+content: "\f099";
+color:#ffffff;
+float:left;
+}
+.blog_sharing a.share_facebook:before {
+content: "\f09a";
+color:#ffffff;
+float:left;
+}
+/*.blog_sharing a.share_email:before {
+content: "\f003";
+}
+/*.blog_sharing a.share_reddit:before {
+content: "\f281";
+}
+.blog_sharing a.share_vk:before {
+content: "\f189";
+}
+.blog_sharing a.share_pinterest:before {
+content: "\f231";
+}
+.blog_sharing a.share_google:before {
+content: "\f0d5";
+}
+.blog_sharing a.share_tumblr:before {
+content: "\f173";
+} */
+/*<a href="">Síguenos</a><br/> link en verde*/
+/*<a class="share_email" href="mailto:?body=" title="email"><span>Email</span></a> */
+</style>
+
+
+<div>
+<div class="blog_sharing hs-blog-social-share clearfix">
+<p class="tipoletra">Síguenos<br><br></p>   
+<a class="share_facebook" href="https://www.facebook.com/PowerDataAmericas" title="facebook" target="blank" width="600,height=400"><span>Facebook</span></a>
+<a class="share_twitter" href="https://twitter.com/PowerDataGrupo" title="twitter" target="blank" width="600,height=400"><span>Twitter</span></a>
+<a class="share_linkedin1" href="https://www.linkedin.com/company/powerdata/" title="linkedin" target="_blank" width="600" height="400"><span>LinkedIn</span></a>
+</div>
+</div>
+
+
+</div>
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+</div>
+</div><!--end widget-span -->
+</div><!--end row-->
+</div><!--end row-wrapper -->
+
+    </div><!--end footer -->
+</div><!--end footer wrapper -->
+
+    
+<script>
+(function () {
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/_hcms/perf', true /*async*/);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                // do nothing.
+            };
+            var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            function populateNetworkInfo(name, connection, info) {
+                if (name in connection) {
+                    info[name] = connection[name];
+                }
+            }
+            var networkInfo = {};
+            if (connection) {
+                ['type', 'effectiveType', 'downlink', 'rtt'].forEach(function(name) {
+                    populateNetworkInfo(name, connection, networkInfo);
+                });
+            }
+            var perfData = {
+                url: location.href,
+                portal: 239039,
+                content: 5310609648,
+                group: -1,
+                connection: networkInfo,
+                timing: performance.timing
+            };
+            xhr.send(JSON.stringify(perfData));
+        }, 3000);  // Execute this 3 seconds after onload.
+    });
+})();
+</script>
+
+<script src="https://blog.powerdata.es/hs-fs/hub/239039/hub_generated/template_assets/31722442643/1595642809416/Plantillas/Custom/Page/Webtestana/Web_2020_nueva/Plantillas_Listas_2020/UPBoton.js"></script>
+<script>
+if (typeof hsVars !== 'undefined') { hsVars['language'] = 'es-es'; }
+</script>
+
+<script src="/hs/hsstatic/cos-i18n/static-1.27/bundles/project.js"></script>
+<script src="/hs/hsstatic/keyboard-accessible-menu-flyouts/static-1.17/bundles/project.js"></script>
+
+    <!--[if lte IE 8]>
+    <script charset="utf-8" src="https://js.hsforms.net/forms/v2-legacy.js"></script>
+    <![endif]-->
+
+<script src="/_hcms/forms/v2.js"></script>
+
+    <script>
+        var options = {
+            portalId: '239039',
+            formId: '88b32267-4912-44d4-a5b4-881037a2d10c',
+            formInstanceId: '4819',
+            pageId: '5310609648',
+            
+            
+            
+            
+            pageName: "Cu&aacute;ndo y c&oacute;mo deber&iacute;as utilizar una arquitectura de microservicios",
+            
+            
+            
+            inlineMessage: "<p>Gracias por suscribirte al bolet\u00EDn de PowerData. Visita nuestro <a href=\"https://www.powerdata.es/centro-de-recursos\" rel=\"noopener\" target=\"_blank\">Centro de Recursos</a> para obtener los \u00FAltimos blogs, ebooks, webinars, y m\u00E1s.</p>\n<p>&nbsp;</p>\n<p>\u00A1Potencie el valor de la Gesti\u00F3n de los Datos!</p>\n<p>&nbsp;</p>\n<p>El equipo de PowerData</p>",
+            
+            
+            rawInlineMessage: "<p>Gracias por suscribirte al bolet\u00EDn de PowerData. Visita nuestro <a href=\"https://www.powerdata.es/centro-de-recursos\" rel=\"noopener\" target=\"_blank\">Centro de Recursos</a> para obtener los \u00FAltimos blogs, ebooks, webinars, y m\u00E1s.</p>\n<p>&nbsp;</p>\n<p>\u00A1Potencie el valor de la Gesti\u00F3n de los Datos!</p>\n<p>&nbsp;</p>\n<p>El equipo de PowerData</p>",
+            
+            
+            hsFormKey: "433f85c4cb89c73ac91f09a7702dd6a0",
+            
+            
+            css: '',
+            target: '#hs_form_target_module_1594359058321260',
+            
+            
+            
+            
+            
+            contentType: "blog-post",
+            
+            
+            formsBaseUrl: '/_hcms/forms/',
+            
+            
+            formData: {
+                cssClass: 'hs-form stacked hs-custom-form'
+            }
+        };
+
+        options.getExtraMetaDataBeforeSubmit = function() {
+            var metadata = {};
+            
+
+            if (hbspt.targetedContentMetadata) {
+                var count = hbspt.targetedContentMetadata.length;
+                var targetedContentData = [];
+                for (var i = 0; i < count; i++) {
+                    var tc = hbspt.targetedContentMetadata[i];
+                     if ( tc.length !== 3) {
+                        continue;
+                     }
+                     targetedContentData.push({
+                        definitionId: tc[0],
+                        criterionId: tc[1],
+                        smartTypeId: tc[2]
+                     });
+                }
+                metadata["targetedContentMetadata"] = JSON.stringify(targetedContentData);
+            }
+
+            return metadata;
+        };
+
+        hbspt.forms.create(options);
+    </script>
+
+<script src="/hs/hsstatic/AsyncSupport/static-1.94/js/post_listing_asset.js"></script>
+<script>
+  function hsOnReadyPopulateListingFeed_693310270_1619794273925() {
+    var options = {
+      'id': "693310270-1619794273925",
+      'listing_url': "/_hcms/postlisting?blogId=3394331016&maxLinks=5&listingType=popular_all_time&orderByViews=true&hs-expires=1651330273&hs-version=2&hs-signature=AJ2IBuEErRUZo5T5eCWv-a-RFd4GIQ-Fwg",
+      'include_featured_image': false
+    };
+    window.hsPopulateListingFeed(options);
+  }
+
+  if (document.readyState === "complete" ||
+      (document.readyState !== "loading" && !document.documentElement.doScroll)
+  ) {
+    hsOnReadyPopulateListingFeed_693310270_1619794273925();
+  } else {
+    document.addEventListener("DOMContentLoaded", hsOnReadyPopulateListingFeed_693310270_1619794273925);
+  }
+</script>
+
+<script src="/hs/hsstatic/AsyncSupport/static-1.94/js/comment_listing_asset.js"></script>
+<script>
+  function hsOnReadyPopulateCommentsFeed() {
+    var options = {
+      commentsUrl: "https://api.hubapi.com/comments/v3/comments/thread/public?portalId=239039&offset=0&limit=1000&contentId=5310609648&collectionId=3394331016",
+      maxThreadDepth: 3,
+      showForm: true,
+      
+      target: "hs_form_target_54897dca-51c4-4733-9518-5e6f0c256d9f"
+    };
+    window.hsPopulateCommentsFeed(options);
+  }
+
+  if (document.readyState === "complete" ||
+      (document.readyState !== "loading" && !document.documentElement.doScroll)
+  ) {
+    hsOnReadyPopulateCommentsFeed();
+  } else {
+    document.addEventListener("DOMContentLoaded", hsOnReadyPopulateCommentsFeed);
+  }
+
+</script>
+
+
+          <!--[if lte IE 8]>
+          <script charset="utf-8" src="https://js.hsforms.net/forms/v2-legacy.js"></script>
+          <![endif]-->
+      
+
+        <script>
+            hbspt.forms.create({
+                portalId: '239039',
+                formId: '54897dca-51c4-4733-9518-5e6f0c256d9f',
+                pageId: '5310609648',
+                pageName: "Cu\u00E1ndo y c\u00F3mo deber\u00EDas utilizar una arquitectura de microservicios",
+                contentType: 'blog-post',
+                
+                formsBaseUrl: '/_hcms/forms/',
+                
+                
+                
+                css: '',
+                target: "#hs_form_target_54897dca-51c4-4733-9518-5e6f0c256d9f",
+                type: 'BLOG_COMMENT',
+                
+                submitButtonClass: 'hs-button primary',
+                formInstanceId: '1',
+                getExtraMetaDataBeforeSubmit: window.hsPopulateCommentFormGetExtraMetaDataBeforeSubmit
+            });
+
+            window.addEventListener('message', function(event) {
+              var origin = event.origin; var data = event.data;
+              if ((origin != null && (origin === 'null' || document.location.href.toLowerCase().indexOf(origin.toLowerCase()) === 0)) && data !== null && data.type === 'hsFormCallback' && data.id == '54897dca-51c4-4733-9518-5e6f0c256d9f') {
+                if (data.eventName === 'onFormReady') {
+                  window.hsPopulateCommentFormOnFormReady({
+                    successMessage: "Your comment has been received.",
+                    target: "#hs_form_target_54897dca-51c4-4733-9518-5e6f0c256d9f"
+                  });
+                } else if (data.eventName === 'onFormSubmitted') {
+                  window.hsPopulateCommentFormOnFormSubmitted();
+                }
+              }
+            });
+        </script>
+      
+
+<!-- Start of HubSpot Analytics Code -->
+<script type="text/javascript">
+var _hsq = _hsq || [];
+_hsq.push(["setContentType", "blog-post"]);
+_hsq.push(["setCanonicalUrl", "https:\/\/blog.powerdata.es\/el-valor-de-la-gestion-de-datos\/cuando-y-como-deberias-utilizar-una-arquitectura-de-microservicios"]);
+_hsq.push(["setPageId", "5310609648"]);
+_hsq.push(["setContentMetadata", {
+    "contentPageId": 5310609648,
+    "legacyPageId": "5310609648",
+    "contentFolderId": null,
+    "contentGroupId": 3394331016,
+    "abTestId": null,
+    "languageVariantId": 5310609648,
+    "languageCode": "es-es",
+    
+}]);
+</script>
+
+<script type="text/javascript" id="hs-script-loader" async defer src="/hs/scriptloader/239039.js"></script>
+<!-- End of HubSpot Analytics Code -->
+
+
+<script type="text/javascript">
+var hsVars = {
+    ticks: 1619794273867,
+    page_id: 5310609648,
+
+    content_group_id: 3394331016,
+    portal_id: 239039,
+    app_hs_base_url: "https://app.hubspot.com",
+    cp_hs_base_url: "https://cp.hubspot.com",
+    language: "en",
+    analytics_page_type: "blog-post",
+    category_id: 3,
+    folder_id: 0,
+    is_hubspot_user: false
+}
+</script>
+
+
+<script defer src="/hs/hsstatic/HubspotToolsMenu/static-1.99/js/index.js"></script>
+
+<!--Hubspot Migration Assets-->
+<!--migrated from CMS footer_html -->
+
+<!--End Hubspot Migration Assets-->
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W5W8XH9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div id="fb-root"></div>
+ <script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/es_ES/all.js#xfbml=1&status=0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+ <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+ 
+
+
+    
+    <!-- Generated by the HubSpot Template Builder - template version 1.03 -->
+
+</body></html>

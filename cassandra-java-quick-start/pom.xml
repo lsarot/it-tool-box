@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	  <modelVersion>4.0.0</modelVersion>
+	  
+	  <groupId>com.example.leo</groupId>
+	  <artifactId>cassandra-java-quick-start</artifactId>
+	  <version>0.0.1-SNAPSHOT</version>
+	  <name>cassandra-java-quick-start</name>
+
+	<dependencies>
+
+		<dependency>
+		    <groupId>com.datastax.oss</groupId>
+		    <artifactId>java-driver-core</artifactId>
+		    <version>4.7.2</version>
+		</dependency>
+		<!--<dependency>   ANTIGUO
+			<groupId>com.datastax.cassandra</groupId>
+			<artifactId>cassandra-driver-core</artifactId>
+			<version>4.0.0</version>
+		</dependency>-->
+		<!-- In order to test the code with an embedded database server -->
+		<dependency>
+		    <groupId>org.cassandraunit</groupId>
+		    <artifactId>cassandra-unit</artifactId>
+		    <version>4.3.1.0</version>
+		</dependency>
+
+	</dependencies>
+	  
+</project>

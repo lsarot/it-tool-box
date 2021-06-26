@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Demo</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <base href="/"/>
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+</head>
+<body>
+	<h1>Demo</h1>
+	<div class="container"></div>
+	
+	<div>
+	To render content on the condition that the user is authenticated, you have the option of either server-side or client-side rendering.<br/>
+	Here we use client-side rendering.<br/>
+	For server-side, we'd use other stack like ie. JSP
+	</div>
+	
+	
+	<div class="container unauthenticated">
+	
+		<!-- notar que esta url no la manejo yo en un controller sino que Spring la gestiona,
+				quizás al final como hay 'github', va a la configuración del .yml pertinente
+				NÓTESE que si vamos a {baseURL}/login , nos muestra una vista de login con proveedores 
+				y cada botón irá a su ruta, ie. {baseURL}/oauth2/authorization/github
+				..The link takes you not directly to GitHub, but to the local path that processes the authentication (and sends a redirect to GitHub). Once you have authenticated, you get redirected back to the local app, where it now displays your name (assuming you have set up your permissions in GitHub to allow access to that data). -->
+	    <br/>
+	    <!-- The final path in the URL should match the client registration id in application.yml. -->
+	    <a href="/oauth2/authorization/github" class="btn btn-primary">Access with GitHub</a>
+	    <a href="/oauth2/authorization/google" class="btn btn-primary">Access with Google (is not working yet)</a>
+	</div>
+	
+	<div class="container authenticated" style="display:none">
+	  	<br/>Logged in as: <span id="user"></span>
+		<br/>
+		<div>
+		  	<button onClick="logout()" class="btn btn-primary">Logout (no sirve y seguimos el tutorial)</button>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+	    
+		<!-- JQuery nos facilita trabajo -->
+		<!-- JQuery usa AJAX por detrás -->
+		$.get("/user", function(data) {
+	        $("#user").html(data.login);
+	        $(".unauthenticated").hide()
+	        $(".authenticated").show()
+	    });
+
+	</script>
+	
+	<script type="text/javascript">	
+		
+		<!-- no tuvimos que configurar un endpoint pq Spring security ya tiene configurado /logout por defecto -->
+		var logout = function() {
+		    $.post("/logout", function() {
+		        $("#user").html('');
+		        $(".unauthenticated").show();
+		        $(".authenticated").hide();
+		    })
+		    return true;
+		}
+		
+	</script>
+	
+	<script type="text/javascript">
+	
+		<!-- con esto podemos facilitar el incluir un token que está guardado en la cookie, usando JQuery.
+			Lo enviamos sólo en métodos POST, PUT, DELETE.. en un header
+			Esto es para evitar ataques de CSRF
+			En el lado servidor de la app se usa .csrf para activar la protección. -->
+		$.ajaxSetup({
+			  beforeSend : function(xhr, settings) {
+			    if (settings.type == 'POST' || settings.type == 'PUT'
+			        || settings.type == 'DELETE') {
+			      if (!(/^http:.*/.test(settings.url) || /^https:.*/
+			        .test(settings.url))) {
+			        // Only send the token to relative URLs i.e. locally.
+			        xhr.setRequestHeader("X-XSRF-TOKEN",
+			          Cookies.get('XSRF-TOKEN'));
+			      }
+			    }
+			  }
+			});
+		
+	</script>
+	
+	
+</body>
+</html>

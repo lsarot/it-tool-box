@@ -1,0 +1,267 @@
+SPRING HTTP SECURITY
+
+Sugerencia:
+- siempre usar Https
+- API REST: basic + token-based like (OAuth2)
+- autenticación y luego las sigs solicitudes con un JWT (https://openwebinars.net/blog/que-es-json-web-token-y-como-funciona/)
+
+
+Comentarios:
+
+.Si es app web, no guardamos las credenciales en una cookie nunca, sino un token que expira con la sesión, 
+para las siguientes peticiones que se hagan al servidor.
+
+.Putting the credentials into the URL as params is not a good idea for a few reasons. It’s also not the standard way to do it with 
+Basic or Digest auth. The Authorization header is the standard way to send credential info – and of course the format will depend 
+on what mechanism you use. The libraries will usually do that work for you if you don’t want to always set up that header manually.
+
+.First, the client needs to encode and send the credentials on each request. The way to do it is different for Basic 
+or Digest auth, but working on the assumption that you’re doing Basic – just have a look at the wikipedia page of Basic Auth
+to figure out how the credentials are encoded (it’s not complicated). And yes – any request will need to contain the credentials.
+
+.If you’re doing a production grade API, I would certainly suggest going beyond Basic Authentication and using a token based 
+solution (such as OAuth2, yes, but not necessarily limited to it).
+
+
+Resumen:
+
+.enviar credenciales en cada request, usando el header Authorization.
+Usando Basic auth:
+.se envian codificadas (encoded con base64 en Basic auth :\, por eso usamos https)
+Usando Digest auth:
+.Se aplica una función hash a la contraseña antes de ser enviada sobre la red, lo que resulta más seguro que enviarla en texto plano como en la autenticación básica. 
+
+Estos problemas se solucionaron con la aparición de https, donde la conexión va cifrada de punto a punto.
+El problema es si no usamos https, que la información será visible.
+Pero mucho mejor enviar un JWT en la cabecera que Basic o Digest.
+
+---------------------------------------------------------------------
+
+ANÁLISIS:
+
+-Basic & Digest(MD5) authentication (en header Authorize/Authorize-Proxy: Basic|Digest)  -  For a REST Api, Basic and Digest authentication is the natural alternative, as well as the more RESTful one.
+-FormLogin (en body)
+-JWT (una vez authenticado, Authorize: Bearer xxxxx)
+-Token custom
+-OAuth2, SAML, OpenID, SSO
+Oauth2
+	AuthorizationServer - an Authorization Server is an application that issues tokens for authorization.
+							Previously, the Spring Security OAuth stack offered the possibility of setting up an Authorization Server as a Spring Application. But the project has been deprecated, mainly because OAuth is an open standard with many well-established providers such as Okta, Keycloak, and Forgerock to name a few.
+							Of these, we'll be using Keycloak. It's an open-source Identity and Access Management server administered by RedHat, developed in Java, by JBoss. It supports not only OAuth2 but also other standard protocols such as OpenID Connect and SAML.
+	ResourceServer - this is essentially the REST API which we ultimately want to be able to consume.
+
+
+*** El Application Server establece qué protocolo de seguridad va a implantar para ser accedido.
+-Si usa Basic:
+	.desde cliente no web, debemos enviar por adelantado el header <Authorize: Basic base64(user:psw)>
+	.desde cliente web, será retado (challenged) con oto header <Authorization o Authorization-Proxy>, abriéndose un formulario simple en el navegador para introducir las credenciales.
+-Si usa Digest:
+	.creo que se configura como Basic en el servidor, pero al recibir el header <Authorize: Digest encryptedPsw>, sabrá que hay que decodificarla o compararla contra la que tiene en servidor guardada.
+-Si usa formLogin:
+	.sólo sirve para web, será redirigido a la url /login o la que haya establecido. Y se envían por Post (body) las credenciales.
+-Si usa OAuth2, OpenID, SAML:
+	.OAuth makes life simpler and safer for businesses and their end users, allowing them to bypass standard credential management in favor of logging in via another site’s credentials—their Facebook username and password, for instance.
+	.The Spring OAuth 2.0 Login feature provides an application with the capability to have users log in to the application by using their existing account at an OAuth 2.0 Provider (e.g. GitHub) or OpenID Connect 1.0 Provider (such as Google). Google’s OAuth 2.0 implementation for authentication conforms to the OpenID Connect 1.0 specification and is OpenID Certified. 
+	.el cliente web/no-web hace un request, es redirigido/encaminado a que se acredite frente al AuthSrv, se le da un code y con este pide un token. También pudiera saltarse la redirección y que la vista le haga acreditarse directamente con el AuthServer (digamos un escenario tipo iniciar sesión con Google).
+		.Recordar que esto es propio de OpenID Conn, pero OAuth2 como que incluyó esta característica.. Lo propio de OAuth es ie. otorgar acceso a B a mis contactos de A.
+	.con el token se hace un request a la AppServer, esta valida el token contra el AuthServer, al buscar el Principal (ente autenticado) en el ResourceServer.
+
+
+
+-LOGRAR QUE NO SE ENVÍE SESSION (JSESSIONID) DESDE EL RESOURCE SERVER
+	.aún se envía si usamos sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) or .NEVER
+	.pero diferente en cada request. Queremos que pida clave en cada request.
+	.Esta session no es la misma que envía el Auth Server (OAuth2) en la url.
+		.esta es cuando usamos Basic/Digest/formLogin en nuestra API.
+
+		!!! Spring Security does not directly control the creation of the session cookie, so it does not provide support for the SameSite attribute. 
+			Spring Session provides support for the SameSite attribute in servlet based applications. Spring Framework’s CookieWebSessionIdResolver 
+			provides out of the box support for the SameSite attribute in WebFlux based applications.
+			PARECE QUE NO LA CREA SPRING SINO EL SERVLET. Parece que se crea un simple id de sesión, la cosa es que no se toma en cuenta, no se guardan en memoria :).
+
+
+-ANÁLISIS Token custom:
+*A dif de un custom token, un JWT tiene payload, además de ser un token, identificará varios datos.
+.Una cuenta accede con user/psw, con la ip a.b.c.d, se genera un token (custom) que se le entrega al cliente, y se guarda este, la IP y expirationDate.
+.En un próximo request, ya con el token, se busca en la bbdd, se identifica quién hace el request, se valida expiración y, más importante, qué IP hizo el request (pq esta no se puede falsear).
+		Si la IP cambió o venció el token, no será válido, así evitamos que otro use el token.
+			.Siendo mobile app, se envían credenciales guardadas y se obtiene otro token, transparente al usuario. O cuando esté a punto de vencer, se pide automáticamente uno nuevo (con user/pass, pq si pide otro con el token, el atacante podrá extender su uso infinitamente).
+			.Siendo web app, quizás enviando la sessionId (si se usa), ie. quedan 60s, desea extender su sesión ?, entonces se envía sessionID y token, pq psw no se guarda en cookie nunca.
+
+
+- ENVÍO TOKEN RECUPERACIÓN CONTRASEÑA POR EMAIL: One-Way Encryption (i.e. BCrypt, PBKDF2, SCrypt, etc) Vs Two-Way symmetric (AES)
+Encriptábamos un token que iba por url para resetear psw, lo desencriptábamos luego en srv con private-key, veíamos que identificara al usuario que hizo submit y que no estuviera caducado.
+	No había que guardar token en bbdd pq el token de por sí identifica al usuario, pero se validaba con el username que se envía en la request también (el token al ir cifrado garantiza que su contenido está integro).
+	Esto no lo podemos hacer con BCrypt para comparar a quién pertenece ese token, pq no se puede descifrar el contenido.
+
+
+---------------------------------------------------------------------
+
+*** EN PROYECTO SPRING WEB DEMO se configuraron estas cosas. Ver el código.
+
+SPRING BOOT HTTP SECURITY AUTO-CONFIGURATION
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+spring.security.user.name=user
+spring.security.user.password=pass
+
+Si no configuramos una password saldrá en consola:
+Using default security password: c8be15de-4488-4490-9dc6-fab3f91435c6		IF password is not setted
+
+
+- DISABLING AUTO-CONFIGURATION
+
+usar exclude en clase principal
+
+- DISABLING OR SURPASSING ?
+
+.Deshabilitar, removes all initial/default auto-configuration, we do this in these situations:	
+    Integrating application security with a custom security provider, or
+    Migrating a legacy Spring application with already existing security setup – to Spring Boot
+.Sobrepasar(sobreescribir), This is typically easier, as we are just customizing an existing security setup to fulfill our needs.
+
+- CUSTOMIZING AUTO-CONFIGURATION
+
+spring.security.user.password=password (just a simple example)
+or if we need more flexibility
+
+@Configuration
+@EnableWebSecurity//crucial if we disable the default security configuration.. is only optional if we're just overriding the default behavior using a WebSecurityConfigurerAdapter..
+public class BasicConfiguration extends WebSecurityConfigurerAdapter {
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {}
+ 
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {}
+}
+
+
+Spring Boot 2 uses most of Spring Security’s defaults.
+Because of this, some of the endpoints that were unsecured by default in Spring Boot 1 are now secured by default.
+
+These endpoints include static resources such as /css/**, /js/**, /images/**, /webjars/**, /**/favicon.ico, and the error endpoint. If we need to allow unauthenticated access to these endpoints, we can explicitly configure that.
+
+
+- SPRING BOOT 2 SECURITY DISABLED THESE SB1 PROPERTIES:
+
+security.basic.authorize-mode
+security.basic.enabled
+security.basic.path
+security.basic.realm
+security.enable-csrf
+security.headers.cache
+security.headers.content-security-policy
+security.headers.content-security-policy-mode
+security.headers.content-type
+security.headers.frame
+security.headers.hsts
+security.headers.xss
+security.ignored
+security.require-ssl
+security.sessions
+
+- TESTING OUR CONFIGURATION WITH LIVE TESTS
+
+---------------------------------------------------------------------
+
+- SPRING BOOT OAUTH2 SECURITY AUTO-CONFIGURATION
+
+*** VER PROYECTOS SPRING WEB DEMO Y SPRING SECURITY DEMO
+
+------------------------------------------------------------------------------- JSON WEB TOKEN (JWT)
+
+VER TEMA JWT EN DOC APARTE..
+
+--------------------------------------------------------------------- SEPARAR 2 CONFIGURACIONES PARA DISTINTAS CAPAS DE LA APP, WEB Y API
+
+**preferiría separar en 2 aplicaciones, 1 la web y otra la API.
+Split your security configuration into separate sections:
+.for a formLogin use session based API access 
+.and a stateless API with token authentication scheme.
+
+//verify that there is no Set-Cookie header in the response. Otherwise your code somewhere creates an http session on its own.
+@Configuration
+@EnableWebSecurity
+public class SecurityConfiguration {
+
+	/**
+	 * pedir autenticación a todas las rutas /api/**, usando httpBasic
+	 */
+    @Order(1)
+    @Configuration
+    class ApiSecurityConfiguration extends WebSecurityConfigurerAdapter {
+	    @Override
+	    protected void configure(HttpSecurity http) throws Exception {
+	        http
+	            .antMatcher("/api/**")
+	            .authorizeRequests().anyRequest().authenticated()
+	            .and()
+	            .httpBasic().realmName("API") // your API token authentication scheme 
+	            .and()
+	            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+	            .and()
+	            .exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Form realm=\"API\"")); // prevent basic authentication popup in browser
+	    }
+    }
+
+    /**
+	 * permitir que todos puedan acceder a la url /login, usando formLogin, y usando sesiones
+     */
+    @Order(2)
+    @Configuration
+    class DefaultSecurityConfiguration extends WebSecurityConfigurerAdapter {
+	    @Override
+	    protected void configure(HttpSecurity http) throws Exception {
+	        http
+	            .formLogin().loginPage("/login").permitAll()
+	            .and()
+	            .logout().logoutSuccessUrl("/login").permitAll();
+	    }
+    }
+
+    /**
+	 * esta configuración me gustó como ejemplo, por eso la coloco
+     */
+	@Order(3)
+    @Configuration
+    public static class App2ConfigurationAdapter extends WebSecurityConfigurerAdapter {
+
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/user/**")
+                .authorizeRequests().anyRequest().hasRole("USER")              
+                .and().formLogin().loginProcessingUrl("/user/login")
+                .failureUrl("/userLogin?error=loginError").defaultSuccessUrl("/user/myUserPage")
+                .and().logout().logoutUrl("/user/logout").logoutSuccessUrl("/multipleHttpLinks")
+                .deleteCookies("JSESSIONID")
+                .and().exceptionHandling()
+                .defaultAuthenticationEntryPointFor(loginUrlauthenticationEntryPointWithWarning(),  new AntPathRequestMatcher("/user/private/**"))
+                .defaultAuthenticationEntryPointFor(loginUrlauthenticationEntryPoint(), new AntPathRequestMatcher("/user/general/**"))
+                .accessDeniedPage("/403")
+                .and().csrf().disable();
+        }       
+        @Bean
+        public AuthenticationEntryPoint loginUrlauthenticationEntryPoint(){
+            return new LoginUrlAuthenticationEntryPoint("/userLogin");
+        }
+        @Bean
+        public AuthenticationEntryPoint loginUrlauthenticationEntryPointWithWarning(){
+            return new LoginUrlAuthenticationEntryPoint("/userLoginWithWarning");
+        }
+    }
+}
+
+
+--------------------------------------------------------------------- CIFRAR LAS PSW EN LA APP SERVIDOR CON SPRING BOOT
+PERO SE RECOMIENDA HACERLO EXTERNO A LA APP, pq las claves quedan en memoria del servidor
+Usamos Spring CLI u otra como htpasswd u openssl. (VER HTTP AUTHENTICATION.txt)
+
+UserBuilder users = User.withDefaultPasswordEncoder();
+User user = users
+  .username("user").password("password").roles("USER").build();
+User admin = users
+  .username("admin").password("password").roles("USER","ADMIN").build();
+

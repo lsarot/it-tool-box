@@ -1,0 +1,330 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>back-to-basics</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>BackToBasics</name>
+  <description>To test basic language features</description>
+  
+  
+  <properties>
+	  <log4j-core.version>2.13.3</log4j-core.version>
+	  <disruptor.version>3.3.11</disruptor.version>
+  </properties>
+
+
+	<repositories>
+		<repository>
+			<id>apache.snapshots</id>
+			<name>Apache Snapshot Repository</name>
+			<url>https://repository.apache.org/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+  
+  
+  <dependencies>
+  
+  	<!-- standard validation APIs -->
+  	<dependency>
+	    <groupId>javax.validation</groupId>
+	    <artifactId>validation-api</artifactId>
+	    <version>2.0.0.Final</version>
+	</dependency>
+	<!-- Hibernate Validator is the reference implementation of the validation API
+		 is entirely separate from the persistence aspects of Hibernate and by adding it as a dependency, we're not adding these persistence aspects into the project. -->
+	<dependency>
+	    <groupId>org.hibernate.validator</groupId>
+	    <artifactId>hibernate-validator</artifactId>
+	    <version>6.0.2.Final</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.hibernate.validator</groupId>
+	    <artifactId>hibernate-validator-annotation-processor</artifactId>
+	    <version>6.0.2.Final</version>
+	</dependency>
+	
+	<!-- JSR 380 provides support for variable interpolation, allowing expressions inside the violation messages.
+		To parse these expressions, we must add a dependency on both the expression language API and an implementation of that API. GlassFish provides the reference implementation -->
+	<dependency>
+	    <groupId>javax.el</groupId>
+	    <artifactId>javax.el-api</artifactId>
+	    <version>3.0.0</version>
+	</dependency>
+	 
+	<dependency>
+	    <groupId>org.glassfish.web</groupId>
+	    <artifactId>javax.el</artifactId>
+	    <version>2.2.6</version>
+	</dependency>
+	
+	
+	
+	<!-- ............. LOGGING FRAMEWORKS ............. -->
+	
+	<!-- ............. LOG4J2 dependencies ............. -->
+	<!-- DISPONIBLES EN: https://logging.apache.org/log4j/2.x/maven-artifacts.html -->
+	<!-- Log4j 2 is broken up in an API and an implementation (core), where the API provides the interface that applications should code to. Strictly speaking Log4j core is only needed at runtime and not at compile time.
+		However, below we list Log4j core as a compile time dependency to improve the startup time for custom plugins as it provides an annotation processor that generates a metadata file to cache plugin information as well as the necessary code to compile against to create custom plugins. -->
+  	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-api</artifactId>
+	    <version>${log4j-core.version}</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-core</artifactId>
+	    <version>${log4j-core.version}</version>
+	</dependency>
+  	<!-- for log4j2 async logging -->
+  	<!-- If you want to make your Log4j 2 asynchronous you need to add LMAX disruptor library to your pom.xml. LMAX disruptor is a lock-free inter-thread communication library. -->
+	<dependency>
+	    <groupId>com.lmax</groupId>
+	    <artifactId>disruptor</artifactId>
+	    <version>${disruptor.version}</version>
+	</dependency>
+	<!-- for NoSQL appenders -->
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-nosql</artifactId>
+	    <version>2.9.1</version>
+	</dependency>
+	<!-- for Cassandra DB appender -->
+	<dependency>
+		 <groupId>org.apache.logging.log4j</groupId>
+		 <artifactId>log4j-cassandra</artifactId>
+		 <version>${log4j-core.version}</version>
+	</dependency>
+	<!-- for MongoDB appender -->
+			<!--<dependency> VERSION DEPRECADA!, hay que usar log4j-mongodb2 o 3, dependiendo del driver version
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-mongodb</artifactId>
+				<version>2.10.0</version>
+			</dependency>-->
+			<!--<dependency> si usamos mongo-java-driver versiones 2.x
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-mongodb2</artifactId>
+				<version>${log4j-core.version}</version>
+			</dependency>-->
+	<dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-mongodb3</artifactId>
+		<version>${log4j-core.version}</version>
+		<exclusions>
+			<exclusion>
+				<groupId>org.mongodb</groupId>
+				<artifactId>mongodb-driver</artifactId><!-- descartamos un driver antiguo -->
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<!-- If existing components use SLF4J and you want to have this logging routed to Log4j 2, then add the following but do not remove any SLF4J dependencies. -->
+	<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-slf4j-impl</artifactId>
+	    <version>${log4j-core.version}</version>
+	</dependency>
+	<!-- SLF4J Bridge setup -->
+	<!-- https://www.baeldung.com/slf4j-with-log4j2-logback -->
+	<!-- we know the use-case where SLF4J “sits” on top of the particular logging implementation. Used like this, it completely abstracts away the underlying framework.
+	There are cases when an existing logging solution cannot be replaced e.g. due to third-party requirements. This, however, does not mean that the project is “sentenced” only to the already used framework.
+	With this dependency in place, all the calls to Log4j will be redirected to SLF4J. -->
+	<!--<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>log4j-over-slf4j</artifactId>
+	    <version>1.7.30</version>
+	</dependency>
+	<dependency> might be necessary
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-log4j12</artifactId>
+	    <version>1.7.30</version>
+	</dependency>-->
+	<!-- JCL Bridge Setup (Jakarta Commons Logging) -->
+	<!-- another facade for logging frameworks, but this one resolves the underlying framework during runtime -->
+	<!--<dependency>
+	    <groupId>org.apache.logging.log4j</groupId>
+	    <artifactId>log4j-jcl</artifactId>
+	    <version>${log4j-core.version}</version>
+	</dependency>-->
+	<!-- OTRAS -->
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+	    <artifactId>commons-lang3</artifactId>
+	    <version>3.10</version>
+	</dependency>
+		
+	
+	<!-- ............. LOGBACK dependencies ............. -->
+	<!-- also brings slf4j cause is needed -->
+	<!--<dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-core</artifactId>
+	    <version>1.3.0-alpha5</version>
+	</dependency>
+	<dependency>
+	    <groupId>ch.qos.logback</groupId>
+	    <artifactId>logback-classic</artifactId>
+	    <version>1.3.0-alpha5</version>
+	</dependency>-->
+	
+	
+	<!-- ............. LOGGING FACADE ............. -->
+	<!--<dependency>
+	    <groupId>org.slf4j</groupId>
+	    <artifactId>slf4j-api</artifactId>
+	    <version>2.0.0-alpha1</version>
+	</dependency>-->
+
+
+
+
+	<!-- ............. DDBB DRIVERS ............. -->
+
+	<!-- ............. Apache Cassandra ............. -->
+	<!-- replaces com.datastax.cassandra:cassandra-driver-core -->
+	<!--<dependency>
+	    <groupId>com.datastax.oss</groupId>
+	    <artifactId>java-driver-core</artifactId>
+	    <version>4.7.2</version>
+	</dependency>-->
+	<!--<dependency>		(ESTE LO INCLUYE org.apache.logging.log4j:log4j-cassandra)
+	    <groupId>com.datastax.cassandra</groupId>
+	    <artifactId>cassandra-driver-core</artifactId>
+	    <version>3.1.4</version>
+	</dependency>-->
+
+
+	<!-- ............. Mongo DB ............. -->
+	<!-- log4j-mongodb3 está apuntando a org.mongodb:mongodb-driver:3.12.1 -->
+	<!-- https://mongodb.github.io/mongo-java-driver
+	The preferred artifact for new applications is mongodb-driver-sync however,
+	we still publish the legacy mongo-java-driver uber-jar (java9 module compliant)
+	as well as the mongodb-driver jar (not java9 module compliant) introduced in 3.0. -->
+    <!-- 4.0.4 (last on july2020) no funciona para log4j2 2.13.3 -->
+    <!--<dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-sync</artifactId>
+        <version>3.12.5</version>
+    </dependency>-->
+    <!--<dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-legacy</artifactId>
+        <version>3.12.5</version>
+    </dependency>-->
+    <!-- uber-jar (A Log4j2 le viene mejor que mongodb-driver-sync pq tiene todas las clases) -->
+    <dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongo-java-driver</artifactId>
+        <version>3.12.5</version>
+    </dependency>
+    <!-- PARA EL API REACTIVE (la hay en versiones anteriores!) -->
+    <!--<dependency>
+        <groupId>org.mongodb</groupId>
+        <artifactId>mongodb-driver-reactivestreams</artifactId>
+        <version>4.0.4</version>
+    </dependency>-->
+
+
+
+
+	<!-- GUAVA LIB -->
+	<dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava</artifactId>
+		<version>28.2-jre</version>
+		<!-- or, for Android or JRE <= 1.7: -->
+		<!-- <version>28.2-android</version> -->
+	</dependency>
+
+
+
+
+	<!-- ............. CACHE LIBRARIES ............. -->
+	<!-- Caffeine -->
+	<dependency>
+	    <groupId>com.github.ben-manes.caffeine</groupId>
+	    <artifactId>caffeine</artifactId>
+	    <version>2.8.5</version>
+	</dependency>
+	<!-- Cache2k -->
+	<dependency>
+	    <groupId>org.cache2k</groupId>
+	    <artifactId>cache2k-base-bom</artifactId>
+	    <version>1.2.4.Final</version>
+	    <type>pom</type>
+	</dependency>
+	<dependency>
+	    <groupId>org.cache2k</groupId>
+	    <artifactId>cache2k-core</artifactId>
+	    <version>1.2.4.Final</version>
+	</dependency>
+	<!-- JCache -->
+	<dependency>
+	    <groupId>javax.cache</groupId>
+	    <artifactId>cache-api</artifactId>
+	    <version>1.0.0-PFD</version>
+	</dependency>
+	<!-- one of JCache implementations -->
+	<dependency>
+	    <groupId>com.hazelcast</groupId>
+	    <artifactId>hazelcast</artifactId>
+	    <version>4.0.2</version>
+	</dependency>
+	<!-- LevelDB JNI -->
+	<!-- there are specific platform artifacts, such as -osx -win64 -linux64, but all comes with all of them -->
+	<dependency>
+		<groupId>org.fusesource.leveldbjni</groupId>
+		<artifactId>leveldbjni-all</artifactId>
+		<version>1.8</version>
+	</dependency>
+	<!-- LevelDB Java port -->
+	<!-- this one and the JNI artifacts depends behind on org.iq80.leveldb:leveldb_api artifact -->
+	<dependency>
+	    <groupId>org.iq80.leveldb</groupId>
+	    <artifactId>leveldb-api</artifactId>
+	    <version>0.12</version>
+	</dependency>
+	<dependency>
+	    <groupId>org.iq80.leveldb</groupId>
+	    <artifactId>leveldb</artifactId>
+	    <version>0.12</version>
+	</dependency>
+	<!-- RocksDB, a LevelDB fork by Facebook -->
+	<dependency>
+	    <groupId>org.rocksdb</groupId>
+	    <artifactId>rocksdbjni</artifactId>
+	    <version>6.10.2</version>
+	</dependency>
+
+
+  </dependencies>
+  
+  <build>
+  
+    <sourceDirectory>src</sourceDirectory>
+    
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+    
+  </build>
+  
+</project>

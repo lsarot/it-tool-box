@@ -1,0 +1,100 @@
+OAuth2 + OpenID2
+
+https://www.ionos.es/digitalguide/servidores/seguridad/oauth-y-su-version-oauth2/
+
+OAuth2 permite delegar acceso a cierto contenido del usuario.
+
+OAuth 2.0 se basa en la capa de autenticación OpenID Connect (OIDC, v2 de OpenID).
+
+** Unas difs entre OAuth2 y OAuth:
+-OAuth2 ya no utiliza firmas criptográficas.
+-Que tiene grant-types más diferenciados.
+-Usa access-tokens, con tiempos de duración más cortos.
+-Se puede decidir el scope de acceso que se otorga a la app.
+-OAuth2 deja de solicitar los datos de acceso al usuario, cada vez que se establece una comunicación y, por el contrario, solicitar exclusivamente una autorización inicial a la aplicación pertinente (cliente).
+
+SSO, OAuth, OpenID, SAML ?? (tienen que ver con la verificación segura de identidades de usuario)
+
+*SSO (Single Sign On) es un concepto de alto nivel, no un standard ni protocolo. (Ver al fondo)
+
+** OpenID vs. OAuth 2.0
+	Estrictamente, OpenID es un estándar de autenticación, y OAuth de autorización. Desde 2014 guardan una estrecha relación:
+	OAuth 2, sería la tecnología detrás de permitir que una app tercera acceda a contenido de tu cuenta. Digamos cuando permites acceso a cierta Api, para postear desde la tercera, para acceder a tus contactos de la otra app, o infinidad de casos de uso.
+	OpenID Connect, sería la tecnología detrás de permitir acceder a una app tercera usando las credenciales de mi otra cuenta. Digamos acceder a Instagram con Facebook.
+	En OAuth2 se añade esa característica de OpenID de iniciar sesión con otra cuenta.
+	En OpenID Connect, tomamos la característica de OAuth2 de acceder a información básica del usuario. Digamos al crear nueva cuenta, entramos con la cuenta de Google y nos permite obtener su nombre, edad y correo. 
+
+
+** SAML 2 Vs. OAuth 2.0
+	Security Assertion Markup Language (basado en XML), (es el más antiguo) combina las propiedades de OpenID Connect y OAuth2. Se trata, por lo tanto, de un estándar de autenticación y de autorización. SAML tiene una funcionalidad parecida a la de OpenID y también puede utilizarse para llevar a cabo procesos de SSO.
+	Con el sistema SAML, el propio sitio web realiza una solicitud de identificación, que se envía en forma de mensaje XML al proveedor de identidad y que proporciona información sobre los datos requeridos. El proveedor de identidad responde con la llamada “assertion”, que contiene la información de autenticación y autorización solicitada, así como algunos atributos específicos como las direcciones de correo electrónico y los números de teléfono del usuario. 
+		No parece proveer esa característica de OAuth2 de acceder a cualquier cosa que ofrezca el RS.
+		Creo que eso se debe a que OAuth2 se volvió más un framework que un standard, como lo dijo su creador.
+
+	SAML has one feature that OAuth2 lacks: the SAML token contains the user identity information (because of signing). With OAuth2, you don’t get that out of the box, and instead, the Resource Server needs to make an additional round trip to validate the token with the Authorization Server.
+	On the other hand, with OAuth2 you can invalidate an access token on the Authorization Server, and disable it from further access to the Resource Server.
+	OAuth2 provides a simpler and more standardized solution which covers all of our current needs and avoids the use of workarounds for interoperability with native applications.
+	Usaríamos OAuth2 en un sistema nuevo seguramente.
+
+
+** Caso práctico para entender el flujo de protocolo en OAuth2
+Las redes sociales Pinterest y Facebook nos van a servir como casos prácticos para explicar el flujo de protocolo en OAuth2. Pinterest nos da la opción de importar los contactos desde la lista de amigos de Facebook. Para hacerlo, Pinterest necesita tener acceso a la cuenta y a la información que esta tiene almacenada. Por razones de seguridad, como es obvio, no resulta recomendable compartir el nombre de usuario y la contraseña de Facebook con Pinterest. Ten en cuenta que, si esto ocurriera, Pinterest tendría un acceso ilimitado a todos los datos y funciones de la cuenta de Facebook. No obstante, si queremos que Pinterest acceda a los datos concretos que necesita de Facebook, podemos utilizar OAuth2:
+
+    1. Lo primero es iniciar sesión con tu cuenta de Pinterest y acceder a la configuración de tu perfil de usuario.
+    2. Luego, hay que ir al menú “Redes sociales” y mover el control situado junto a Facebook a “Sí”.
+    3. Cuando te pregunte, permite a Pinterest acceder a tu cuenta de Facebook para validar la app de Pinterest. Esta acción se considera una aprobación de autorización.
+    4. Pinterest solicita un access token al authorization server de Facebook y luego lo utiliza para acceder a los datos protegidos del resource server.
+    5. Los amigos de Facebook que han sido importados aparecerán a partir de ahora también en tu cuenta de Pinterest.
+
+
+
+----------------------------- CONTROVERSIAS OAuth2
+
+
+Eran Hammer-Lahav, el director de desarrollo de OAuth2 y la única persona que también había participado en el anterior OAuth, decidió distanciarse del nuevo proyecto cuando solo faltaban tres meses para su lanzamiento. 
+En un artículo publicado en su blog hueniverse.com el 26 de julio de 2012, explicó los motivos de esta decisión y se refirió a la versión OAuth 2.0 como “el camino hacia el infierno” ya en el título.
+
+¿Qué había pasado? Según Hammer-Lahav, el desarrollo del nuevo protocolo estuvo marcado por las constantes discusiones entre los desarrolladores y las empresas involucradas (entre las que podemos citar a Yahoo!, Google, Twitter y Deutsche Bank). 
+Afirma que, cuando surgían cuestiones controvertidas, muchas veces eran simplemente ignoradas en favor de los intereses económicos. 
+En consecuencia, según Hammer-Lahav, OAuth2 no podía seguir considerándose un protocolo, ya que, de un estándar claramente definido, había pasado a ser un mero framework con gran capacidad para adaptarse y ampliarse. Es decir, OAuth2 había perdido una de sus principales características: la interoperabilidad. 
+Al contrario, las diferentes implementaciones de OAuth2 ya no eran necesariamente compatibles entre sí.
+
+Otra cosa que Hammer-Lahav lamentaba era el hecho de que se decidiera establecer una implementación más sencilla (un ejemplo es que ya no necesita firmas), pues esto se traduce en una falta de seguridad. 
+Para programar una aplicación segura que soportara Oauth2, habría que contar con desarrolladores que tuvieran mucha experiencia. Para él resultaba mucho más probable, en cambio, que en el futuro la red se llenara de aplicaciones poco seguras. 
+Según Hammer-Lahav, los errores de implementación no iban a poder evitarse porque las especificaciones eran excesivamente complejas e incompletas.
+
+
+
+----------------------------- SSO Single Sign On
+
+
+
+SSO is a high-level term used to describe a scenario in which a user uses the same credentials to access multiple domains.
+SSO is an authentication / authorization flow through which a user can log into multiple services using the same credentials.
+
+Cuando las personas deben memorizar muchas contraseñas, caen en la mala práctica de anotarlas en lugares visibles, o hacerlas muy débiles (ie. 1234), 
+a esto se le conoce como password fatigue.
+
+Con SSO los usuarios sólo acceden una vez en su dispositivo y se le otorga acceso a múltiples servicios y equipos para los cuales haya obtenido autorización local. 
+Y se cancelan los derechos de acceso al cerrar sesión o expirarse.
+
+Esto funciona con, digamos, una clave maestra. El servicio SSO conoce las credenciales de los demás servicios y los demás servicios saben de esta credencial única y global.
+
+3 Posibles soluciones para SSO:
+
+- Portal:
+un sistema que integra varias aplicaciones, procesos y servicios. Si la autenticación se lleva a cabo con éxito, el usuario obtiene un código de identificación general (algo parecido a una cookie), con el que puede acceder a todas las funciones integradas en el portal. Las cuentas de Google son un buen ejemplo de esta solución: una vez que el usuario se registra e inicia sesión, obtiene acceso inmediato al resto de servicios del gigante informático, como Play Store o Gmail.
+
+- Ticket:
+red de servicios que se reconocen entre sí. Si el usuario inicia sesión en uno de ellos, se le asignará un ticket virtual con el que podrá identificarse en todas las demás aplicaciones que formen parte de ese “círculo de confianza”. Como ejemplo, podemos mencionar el servicio de autenticación Kerberos o el proyecto Liberty Alliance.
+
+- Local:
+cliente SSO se instala en el ordenador que se utiliza regularmente. Este se configura para que obtenga los datos de acceso de todas las aplicaciones y servicios requeridos, por ejemplo, de un archivo local encriptado en el disco duro, un servidor de red local o una base de datos, y los introduzca automáticamente en la interfaz de inicio de sesión abierta en ese momento. Son clientes SSO de este tipo los servicios de contraseña de navegadores como Safari o Chrome.
+
+VERIMI: (alternativa bancaria)
+	Google, Facebook, etc (los que usen OpenID), usan tu información para compartir con otros proveedores.
+Este nuevo proveedor de identidad de SSO ofrecería un mayor nivel de protección y transparencia en cuanto al uso de los datos y podría, por lo tanto, utilizarse a largo plazo en el sector bancario y administrativo.
+
+En resumen: SSO ¿sí o no?
+Si buscas información sobre el single sign on en Internet, verás que este cómodo sistema de autenticación múltiple ha recibido relativamente pocas críticas. Al contrario, durante años, este método ha supuesto una auténtica revelación para el entorno de trabajo digital en términos de comodidad y seguridad de datos. En este sentido, Bitglass, el agente de seguridad estadounidense para el acceso a la nube (CASB, por sus siglas en inglés, celebra el uso de los servicios en la nube por parte de cada vez más empresas de todo el mundo y, al mismo tiempo, lamenta el uso comparativamente bajo de los procesos de single-sign on. En su opinión, el hecho de utilizar soluciones de acceso a servicios y aplicaciones que compiten unas con otras involuntariamente no permite aprovechar todo el potencial de la digitalización.
+No obstante, la otra cara de la moneda también es bien conocida. Hace poco, el famoso proveedor de identidad de Facebook se ganó una dudosa reputación debido al robo de datos de Cambridge Analytica. En abril de 2018, se demostró que el procedimiento interno de “Iniciar sesión con Facebook” era vulnerable frente a los ataques de tipo phishing y man-in-the-browser, lo que volvió a poner de relieve el mayor riesgo del SSO: una interfaz de inicio de sesión único también implica que solo sea necesario un único ataque cibernético para provocar daños significativos. Los investigadores de la Universidad de Princeton están pidiendo a los operadores de esta red social que informen mejor a sus usuarios sobre los riesgos del single sign on.

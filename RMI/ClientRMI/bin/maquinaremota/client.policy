@@ -1,0 +1,3 @@
+grant codeBase "/Users/Leo/Documents/NetBeansProjects/RMI/ClientRMI/build/classes/maquinaremota/" {
+    permission java.security.AllPermission;
+};

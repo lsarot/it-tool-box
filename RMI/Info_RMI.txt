@@ -1,0 +1,70 @@
+BUENA INFORMACIÓN EN: http://www.chuidiang.com/java/rmi/
+
+CARGA DINÁMICA DE CLASES
+Habilitando un mecanismo de rmi llamado carga dinámica de clases, podemos evitar hacer estas copias. Por medio de este mecanismo, el cliente y el servidor dicen dóne están sus clases Serializable y Remote (el resto pueden estar en otro lado). Este sitio debe ser accesible desde red. De esta forma, cuando el servidor, por ejemplo, necesite una clase del cliente porque la recibe como parámetro, rmi se encargará de descargar esa clase automáticamente del sitio que ha indicado el cliente.
+Sin embargo, esto abre las puertas a clientes perversos. Pueden inventarse una clase Serializable que borre el disco duro y enviarla al servidor.  Puesto que el código de esta clase se ejecuta en el servidor, se borrará el disco duro del servidor. Por ello, hay que configurar adecuadamente una política de seguridad. Veamos todo esto con más detalla.
+
+HABILITAR LA CARGA DINÁMICA DE CLASES
+
+Para habilitar la carga dinámica de clases, basta con poner un RMISecurityManager con una línea como esta:
+
+if (System.getSecurityManager() == null)   System.setSecurityManager(new RMISecurityManager());
+
+Sin embargo, para que todo funcione como debe, debemos configurar una serie de cosas.
+
+En primer lugar, en una propiedad java.rmi.server.codebase debemos indicar dónde están los fichero.class de las clases Serializable y los fichero_Stub.class de las clases Remote. Esto se indica por medio de un path en formato URL. Estos son dos posibles ejemplos
+
+System.setProperty("java.rmi.server.codebase","file:/D:/directorio/");
+System.setProperty("java.rmi.server.codebase","http://host/directorio/");
+
+Si usamos file, el directorio debe estar compartido y ser accesible desde el cliente y el servidor.
+
+Si usamos http, deberemos tener un servidor web montado y tener accesibles las clases en el sitio que hemos indicado.
+
+
+La otra cosa que debemos configurar es un fichero, habitualmente de nombre java.policy, con los permisos que queremos que tenga cada clase. Existen sitios por defecto en los que java busca este fichero (un directorio perdido de JAVA_HOME y también en el HOME del usario como .java.policy), pero para evitar problemas y asegurarnos, es mejor definir la propiedad java.security.policy indicando dónde y cómo se llama este fichero. Puede ser algo así
+
+System.setProperty("java.security.policy","d:/directorio/java.policy");
+
+EL PROBLEMA CON LA SEGURIDAD
+
+En casi todos los tutoriales, y por no complicarse la vida en explicaciones, dejan el fichero java.policy con todos los permisos abiertos para todo el mundo, como en este fichero java.policy. El problema es que el cliente puede hacerse la clase que va a pasar como parámetro a medida, puede pasar cualquier clase hija de lo que oficialmente se admite como parámetro en el método. En nuestro ejemplo, puede inventarse cualquier clase que implemente la interface InterfaceSumando.
+
+¿Qué impide que un cliente en el método getSumando1() borre el disco duro, abra un socket y envíe información a algún sitio o apague el ordenador?. Lo impide el fichero java.policy, pero como lo hemos dejado abierto.... Un cliente "canalla" puede poner lo que le dé la gana en cualquiera de los métodos y esos métodos se ejecutarán en el servidor.
+
+Es más, ¿por qué esperar que el servidor llame a algún método?. Si en un objeto Serializable definimos el método readObject() así
+
+    private void readObject(ObjectInputStream in) throws IOException
+    {
+        // Aquí debería leerse el Sumando del ObjetInputStream, pero como somos más malos que la quina, borramos el disco duro.
+    }
+
+java se encargará de llamar a este método en el servidor, cuando tenga que reconstruir el objeto sumando enviado por el cliente.
+EL FICHERO java.policy
+
+Si instalamos en el servidor un RMISecurityManager como indicamos un par de puntos antes, se hará caso a lo que diga el fichero java.policy.
+
+El fichero java.policy, aunque todo el mundo lo pone en su versión abierta, con todos los permisos para todo el mundo, en realidad tiene una sintaxis muy completa y nos ofrece muchas posibilidades. Se pueden dar permisos para leer o escribir en disco, abrir sockets, etc, etc.
+
+Si ponemos algo tan complejo como esto:
+
+grant {
+    permission java.net.SocketPermission "*:1024-65535",
+      "connect,accept";
+   permission java.io.FilePermission
+      "c:\\home\\ann\\public_html\\classes\\-", "read";
+   permission java.io.FilePermission
+      "c:\\home\\jones\\public_html\\classes\\-", "read";
+};
+
+ya estamos limitando algo. Sólo se pueden abrir sockets en un rango de puertos y sólo se tiene permiso de lectura en determinados directorios.
+
+Para que la carga dinámica de clases funcione, necesitamos abrir como mínimo los permisos necesarios para acceso a los fichero.class y fichero_Stub.class que el cliente intenta compartir con nosotros.
+
+Si miramos el tutorial de Sun en perfecto inglés, vemos que hay permisos para aburrir y que se pueden especificar incluso para clase concretas, dependiendo si están o no firmadas. Vaya, muy completito.
+
+EL CLIENTE DEBE TAMBIÉN PROTEGERSE
+
+El problema de seguridad es recíproco. El cliente pasa parámetros al servidor, pero el servidor le devuelve un resultado o le lanza una excepción. Aunque en el ejemplo no es así, el servidor podría devolver como resultado una clase Serializable. También lanza excepciones, que son clases Serializable.  Ambas, para llegar del servidor al cliente, necesitan serializarse. Nuevamente tenemos el problema,  pero al revés. Código que se ha hecho en el servidor y que se ejecuta en la máquina del cliente.
+
+Quizás un servidor no tenga especial interes en borrar el disco del cliente (o sí), pero como todos sabemos, sí puede instalar puertas traseras, leer información que le resulte de interés, etc, etc.

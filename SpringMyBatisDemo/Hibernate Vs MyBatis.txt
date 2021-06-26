@@ -1,0 +1,100 @@
+https://stackoverflow.com/questions/1984548/hibernate-vs-ibatis
+
+--------------------------------------------
+
+Ibatis and Hibernate are quite different beasts.
+
+The way I tend to look at it is this: Hibernate works better if your view is more object-centric. If however you view is more database-centric then Ibatis is a much stronger choice.
+
+If you're in complete control of your schema and you don't have an extremely high throughput requirement then Hibernate can work quite well. The object model makes for fairly convenient code but at a huge complexity cost.
+
+If you're dealing with a "legacy" database schema where you need to write fairly complicated SQL queries then chances are Ibatis will work better.
+
+HQL (Hibernate Query Language) is another language you'll have to learn and even then you'll probably find cases where you still need to write SQL. What's more, chances are you will at some spend half a day figuring out the right combination of XML, properties, annotations, etc to get Hibernate to generate a performant SQL query.
+
+There is no universal "A is better than B" answer for this question.
+
+--------------------------------------------
+
+Consider what you're trying to achieve. Typically, the Command Query Response Segregation model works well for complex domains.
+
+The reason is that you're trying to do one of two things typically:
+
+    1. Create/Update/Delete some complex domain entities
+    2. Run analytic fetch queries (i.e. summation/aggregation queries)
+
+Hibernate works well for case 1 allowing you to just make a POJO and persist/update it. It also does this quickly, unless your domain is quite large.
+
+myBatis is great for fetch queries (case 2) where you just want an answer. Hibernate would attempt to load the entire object graph and you'd need to start tuning queries with LazyLoading tricks to keep it working on a large domain. Conversely if you just want some analytic POJO page, the myBatis implementation of the same query would be trivial.
+
+Because of this, myBatis is faster than Hibernate at SELECTS.
+
+These two cases are the difference between Commands where you want to change the domain data and Responses where you just want to fetch some data.
+
+So, consider these two cases and what your application does. If you have a simple domain and just fetch information, use myBatis. If you have a complex domain and persist entities, use Hibernate. If you do both, consider a hybrid approach. That's what we use on our project that has thousands of entities to keep it under control. ;)
+
+--------------------------------------------
+
+Also I think that Hibernate has a bit more of learning curve. 
+With iBATIS, it's pretty easy to know what is going on while more "magic" happens with Hibernate. In other words, newbies might find iBatis easier to use and to understand.
+
+--------------------------------------------
+
+ORM vs persistence framework
+
+	Hibernate is object-relation mapping framework (ORM) which maps Java classes to database tables. MyBatis is persistence framework - not ORM. It maps SQL statements to Java methods.
+
+Database schema
+
+	Hibernate can create or validate database schema according to your Java model while MyBatis does not have such feature. 
+	Also it is convenient for testing environment when you're using in-memory DB.
+
+Cache
+
+	Hibernate has first level cache which is impossible to disable. 
+	It means that if you query item through ORM and then delete it directly with SQL, it stays in the cache. 
+	You can explicitly clear the cache to get the most updated results from database.
+
+Optimistic lock management
+
+	Also there are differences for optimistic lock management:
+    MyBatis doesn't support optimistic concurrency control natively, unlike ORM tools like Hibernate/JPA with the @Version annotation.
+
+Lazy loading
+
+	Hibernate will try to load entire object graph except objects which are marked for lazy loading.
+	MyBatis will load data according a SQL query. Lazy loading may improve performance but it may cause connection leaks if it used with <property name="hibernate.enable_lazy_load_no_trans" value="true" /> properties.
+
+Hibernate Session management
+
+	Entities operations like saving, updating or deleting are performed via Hibernate Session. It requires good understanding how to implement proper Hibernate Session management strategy to avoid detached entity passed to persist and other phenomenons related to Hibernate.
+	Sometimes it may take more time trying to understand underlying Hibernate behavior than add a little bit more work and write raw SQL statements for myBatis.
+
+Cascading
+
+	Hibernate provides cascading, orphan removal and other features for object graphs while they not present in myBatis - to implement them you'll need to write SQL queries explicitly.
+
+Queries
+
+	In myBatis you'll write almost plain SQL queries. Hibernate has multiple options to form query: SQL, HQL, Criteria API. Sometimes it may be suitable to use Criteria API when you have many optional fields in criteria. It would provide more structured approach to form query and maybe avoid related mistakes.
+	
+--------------------------------------------
+.....
+
+In my expierence, both Hibernate and Mybatis are used regularly on the same project.
+
+Where Hibernate is being used for
+
+    General C.R.U.D functionality
+    'Walking' the 'domain object' relational model
+    Session management
+
+and where Mybatis is being used for
+
+    ad hoc queries
+    kick off (and interact with) stored procedures
+    support very specific or intricate queries
+    support complicated search queries, where search criteria is dynamic, and paging of results
+
+
+

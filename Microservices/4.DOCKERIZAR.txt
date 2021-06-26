@@ -1,0 +1,65 @@
+
+1. DOCKERIZAR:
+
+mvn clean package en cada proyecto (y tras cada modificación que requiera recompilar)
+creamos el Dockerfile
+
+1.1. Si levantamos cada contenedor por separado
+
+docker build --tag=spring-config-server:latest .   (no usamos nombre de contenedor, el de imágen es spring-config-server versión latest)
+docker run [-d] -p8888:8888 spring-config-server:latest
+
+-d //detached, no muestra salida por consola, podemos verlo por la UI de Docker Desktop para mac o Win
+--rm=true //will remove intermediate images after it has been build successfully
+
+docker inspect spring-config-server
+docker stop spring-config-server
+docker rm spring-config-server
+
+Luego la otra app
+
+1.2. Docker Compose para centralizar despliegue de varios contenedores
+
+creamos el docker-compose.yml (o anything.yml)
+
+docker compose config // revisar sintaxis del fichero
+
+tras cada cambio en un proyecto debemos compilar nuevamente con 'mvn clean package -Dmaven.test.skip=true' (o con tests)
+docker compose up --build --force-recreate [a.yml b.yml]  // docker-compose .. también sirve pero es un programa antiguo. Pasamos los yml al final si queremos que instancie varios de una vez
+
+docker compose down // para detener el "sistema"
+
+1.3. Escalar sistema con varias instancias de cada servicio
+
+quitamos el container_name del docker-compose.yml
+seteamos que en el host asigne de un rango de puertos, en lugar de uno fijo
+	ports:
+	    - 18800-18888:8888
+el nro de replicas
+	deploy:
+      mode: replicated
+      replicas: 3
+levantamos el 'sistema'
+	docker-compose --file docker-compose-scale.yml up -d --build
+
+1.4. Crear nuestra propia imágen base de Linux con Java
+
+FROM alpine:edge // If this image is not in the local library, an online-search on DockerHub, or on any other configured remote-registry, is performed
+MAINTAINER baeldung.com // usually an email address, identifying the author of an image
+RUN apk add --no-cache openjdk8 // executing a shell command-line within the target system. Here we utilizing Alpine Linux's package manager apk to install the Java 8 OpenJDK
+
+Then docker build --tag=alpine-java:base --rm=true .
+We can now use the created image instead of ig. openjdk:8-jdk-alpine
+
+1.5. Buildpacks Support in Spring Boot 2.3
+// https://buildpacks.io/
+
+Instead of creating our own Dockerfile and building it using something like docker build, all we have to is to issue the following command:
+	mvn spring-boot:build-image
+	or ./gradlew bootBuildImage
+
+The main motivation behind buildpacks is to create the same deployment experience that some well-known cloud services such as Heroku or Cloud Foundry are providing for a while. We just run the build-image goal and the platform itself takes care of building and deploying the artifact.
+Moreover, it can help us to change the way we are building Docker images more effectively. Instead of applying the same change to lots of Dockerfiles in different projects, all we have to do is to change or tune the buildpacks image builder.
+In addition to ease of use and better overall developer experience, it can be more efficient, too. For instance, the buildpacks approach will create a layered Docker image and uses the exploded version of the Jar file.
+
+

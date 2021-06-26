@@ -1,0 +1,118 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.maven.add.spring</groupId>
+	<artifactId>com-maven-add-spring</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>SpringOnMavenDemo</name>
+
+	<description>
+  	To show how to add Spring to a normal Maven project.
+  	</description>
+
+	<!-- Spring projects use Maven (or Gradle) as build tool, so we could have 
+		just Maven projects, Spring projects adding dependencies to Maven pom, or 
+		a SpringBoot project, which has some dependencies by default with more functionality. 
+		Spring is designed to be highly modular – using one part of Spring should 
+		not and does not require another. For example, the basic Spring Context can 
+		be without the Persistence or the MVC Spring libraries. -->
+
+	<!-- Spring versions & JDK versions 
+		Spring Framework 5.3.x: JDK 8-17 (expected) 
+		Spring Framework 5.2.x: JDK 8-15 (expected) 
+		Spring Framework 5.1.x: JDK 8-12 
+		Spring Framework 5.0.x: JDK 8-10 
+		Spring Framework 4.3.x: JDK 6-8 
+		Las versiones anteriores de Spring supongo que pedían mínimo JDK 5 -->
+
+	<properties>
+		<org.springframework.version>5.2.5.RELEASE</org.springframework.version>
+	</properties>
+
+
+
+	<repositories>
+		<!-- if a project needs to use milestone versions, such as 3.2.0.RC2 -->
+		<repository>
+			<id>repository.springframework.maven.milestone</id>
+			<name>Spring Framework Maven Milestone Repository</name>
+			<url>http://repo.spring.io/milestone/</url>
+		</repository>
+		<!-- or snapshot versions, such as 4.0.3.BUILD-SNAPSHOT -->
+		<repository>
+	        <id>repository.springframework.maven.snapshot</id>
+	        <name>Spring Framework Maven Snapshot Repository</name>
+	        <url>http://repo.spring.io/snapshot/</url>
+	    </repository>
+	</repositories>
+
+
+
+	<dependencies>
+
+
+		<!-- CONTEXT Spring Injection Container and has a small number of dependencies: 
+			spring-core, spring-expression, spring-aop, and spring-beans. ..support for 
+			some of the core Spring technologies: the Core Spring utilities, the Spring 
+			Expression Language (SpEL), the Aspect Oriented Programming support and the 
+			JavaBeans mechanism. -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${org.springframework.version}</version>
+		<!--<scope>runtime</scope> con esto no me encontraba varios packages -->
+			<!--this will make sure that there are no compile 
+				time dependencies on any Spring specific APIs. For more advanced use cases, 
+				the runtime scope may be removed from some selected Spring dependencies, 
+				but for simpler projects, there is no need to compile against Spring to make 
+				full use of the framework. -->
+		</dependency>
+
+
+		<!-- PERSISTENCE SUPPORT This comes with Hibernate and JPA support – such 
+			as HibernateTemplate and JpaTemplate – as well as a few additional, persistence 
+			related dependencies: spring-jdbc and spring-tx. The JDBC Data Access library 
+			defines the Spring JDBC support as well as the JdbcTemplate, and spring-tx 
+			represents the extremely flexible Transaction Management Abstraction. -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+
+
+		<!-- WEB & SERVLET SUPPORT -->
+		<!-- common web specific utilities for both Servlet and Portlet environments -->
+		<!--<dependency> 
+			<groupId>org.springframework</groupId> 
+			<artifactId>spring-web</artifactId> 
+			<version>${org.springframework.version}</version> 
+			</dependency> -->
+		<!-- MVC support for Servlet environments. THIS includes spring-web -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+
+
+		<!-- TEST SUPPORT -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+
+		<!-- SECURITY SUPPORT -->
+		
+		
+
+
+
+	</dependencies>
+
+
+</project>

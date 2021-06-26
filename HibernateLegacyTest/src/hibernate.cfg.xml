@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!--las conexiones se obtienen de una implementación de la interface connectionProvider
+        si está seteado hibernate.connection.provider_class tomará precedencia,
+        luego precederá, si está seteado, hibernate.connection.datasource,
+        luego hibernate.c3p0, hibernate.proxool y hibernate.hikari,
+        luego hibernate.connection.url
+        y finalmente cualquier implementación hecha por el usuario
+        esto pudiera cambiar según se incorporen otras implementaciones de pool de conexiones por ejemplo-->
+        
+        
+        <!-- Database connection settings -->
+        <!--<property name="hibernate.connection.datasource">java:/comp/env/jdbc/hibernate1</property>--><!--si especifico el datasource no especifico driverclass, url, user ni password-->
+        <!--el datasource pudiera definir un pool de conexiones que trae el contenedor por ej, pero en hibernate se puede trabajar con otros como c3p0, proxool, hikari-->
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/biblio_reserva_cubiculo</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">root</property>
+        
+        <!-- JDBC connection pool (using the built-in, not recommended in production) -->
+        <!--<property name="hibernate.connection.pool_size">1</property>-->
+        
+        <!-- hibernate c3p0 connection pooling configuration  -->
+        <!--<property name="hibernate.connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>-->
+        <!--<property name="hibernate.c3p0.acquire_increment">1</property>          -->
+        <!--<property name="hibernate.c3p0.idle_test_period">60</property>          --> <!-- seconds -->
+        <!--<property name="hibernate.c3p0.min_size">5</property>                   -->
+        <!--<property name="hibernate.c3p0.max_size">100</property>                 -->
+        <!--<property name="hibernate.c3p0.max_statements">50</property>            -->
+        <!--<property name="hibernate.c3p0.timeout">60</property>                   --> <!-- seconds -->
+        <!--<property name="hibernate.c3p0.acquireRetryAttempts">1</property>       -->
+        <!--<property name="hibernate.c3p0.acquireRetryDelay">250</property>        -->
+        
+        <!-- SQL dialect -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+        <!-- Drop and re-create the database schema on startup -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="hibernate.current_session_context_class">thread</property>
+        <!-- Cambio el current hql translator factory de ast a classic -->
+        <property name="hibernate.query.factory_class">org.hibernate.hql.internal.classic.ClassicQueryTranslatorFactory</property>                
+        <!-- Disable the second-level cache  -->
+        <property name="hibernate.cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+        <!-- Echo all executed SQL to stdout -->
+        <property name="hibernate.show_sql">false</property>
+
+        <mapping class='Entities.Codigoseg'/>
+        <mapping class='Entities.Cubiculo'/>
+        <mapping class='Entities.Horario'/>
+        <mapping class='Entities.Parametro'/>
+        <mapping class='Entities.Perfil'/>
+        <mapping class='Entities.Permiso'/>
+        <mapping class='Entities.Prestamo'/>
+        <mapping class='Entities.Reserva'/>
+        <mapping class='Entities.Usuario'/>
+        <!--<mapping resource="Entities/Usuario.hbm.xml"/>   SI NO ESTÁN ANOTADAS USAMOS EL hbm-->
+    </session-factory>
+</hibernate-configuration>

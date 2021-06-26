@@ -1,0 +1,24 @@
+server: 
+  port: 8081
+  servlet: 
+    context-path: /resource-server #ruta inicial
+    #session:
+      #cookie:
+        #name: UISESSION
+ 
+spring:
+  security:
+    oauth2:
+      #con esto sabrá quién es el Authorization Server, para validar el token... hay otra configuración cuando es una app cliente, donde se le configura quién es el AS.
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8083/auth/realms/baeldung #to validate the issuer of the tokens (which is the Authorization Server)
+          jwk-set-uri: http://localhost:8083/auth/realms/baeldung/protocol/openid-connect/certs #points to the URI containing the public key, so that our Resource Server can verify the tokens' integrity. 
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect          
+                  

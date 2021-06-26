@@ -1,0 +1,26 @@
+
+spring:
+  application:
+    name: spring-cloud-ribbon
+
+
+server:
+  port: 8080
+
+# Named client for the list of servers: “ping-server”
+# Disabled Eureka service discovery component, by setting eureka: enabled to false
+    # posiblemente seteando eureka.enabled=true intente recuperar host:port de servicios que se llamen ping-server, pero qué hay de nombres dinámicos cuando queremos usar un puerto aleatorio (ig. my-service:s8k-5vd-fs7-685) ? es un identificador (instanceId no spring.application.name), pero eureka sabe que son instancias de tipo X
+ping-server:
+  ribbon:
+    eureka:
+      enabled: false
+    listOfServers: localhost:8081,localhost:8082
+    ServerListRefreshInterval: 15000
+
+# Ribbon API not only provides client side load balancing algorithms but also it has built in failure resiliency.
+# As stated before, Ribbon API can determine the server's availability through the constant pinging of servers at regular intervals and has a capability of skipping the servers which are not live.
+# In addition to that, it also implements Circuit Breaker pattern to filter out the servers based on specified criteria.
+# The Circuit Breaker pattern minimizes the impact of a server failure on performance by swiftly rejecting a request to that server that is failing without waiting for a time-out.
+# We can disable this Circuit Breaker feature by setting the property 
+# niws.loadbalancer.availabilityFilteringRule.filterCircuitTripped = false.
+# When all servers are down, thus no server is available to serve the request, the pingUrl() instance (see RibbonConfiguration.java) will fail and we receive an exception java.lang.IllegalStateException with a message “No instances are available to serve the request”.

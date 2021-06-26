@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.2.6.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>spring-swagger-demo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>SpringSwaggerDemo</name>
+	<description>Demo project for Spring Boot</description>
+
+	<properties>
+		<java.version>1.8</java.version>
+		<!-- SWAGGER: usar hasta la versión 2.9.2 de SpringFox en SpringBoot 2.0.5 (por allí)... para SpringBoot 2.2.6 se necesitó la versión 3.0.0-SNAPSHOT -->
+		<!--<springfox.version>2.9.2</springfox.version>-->
+		<springfox.version>3.0.0-SNAPSHOT</springfox.version>
+	</properties>
+
+
+	<repositories>
+	    <!-- springfox-swagger -->
+		<repository>
+			<id>jcenter-snapshots</id>
+			<name>jcenter</name>
+			<!--<url>http://oss.jfrog.org/artifactory/oss-snapshot-local/</url>--><!--snapshot-->
+			<url>https://jcenter.bintray.com/</url><!--release-->
+		</repository>
+	</repositories>
+		
+
+	<dependencies>
+	
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		
+		
+		<!-- PERSISTENCE -->
+		
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-rest</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		</dependency>
+
+
+		<!-- SWAGGER -->
+		
+		<!-- con springboot sólo necesito esto -->
+		<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-boot-starter</artifactId>
+		    <version>3.0.0</version>
+		</dependency>
+		
+		<!-- sin springboot estos 2 -->
+		<!--<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger2</artifactId>
+		    <version>${springfox.version}</version>
+		</dependency>-->
+		<!-- with this we enable the web UI, if not, we only have docs as json format -->
+		<!--<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-swagger-ui</artifactId>
+		    <version>${springfox.version}</version>
+		</dependency>-->
+		
+		<!-- this will enable to recognize entities.
+			Springfox provides support for Spring Data REST through its springfox-data-rest library.
+			The springfox-data-rest library's 2.9.2 version doesn't provide smooth integration with the Spring Boot 2 and Spring Data REST API.
+			Therefore, we'll use the 3.0.0-SNAPSHOT version of the Springfox libraries. -->
+		<!--<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-data-rest</artifactId>
+		    <version>${springfox.version}</version>
+		</dependency>-->
+		<!-- Springfox also supports the bean validation annotations, this will show beans constraints in swagger UI. Those constraints from javax.validation package (see User entity) -->
+		<!--<dependency>
+		    <groupId>io.springfox</groupId>
+		    <artifactId>springfox-bean-validators</artifactId>
+		    <version>${springfox.version}</version>
+		</dependency>-->
+
+
+		<!-- SECURITY -->
+		
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security.oauth.boot</groupId>
+		    <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+		    <version>2.0.1.RELEASE</version>
+		</dependency>
+		
+
+		<!-- TESTING -->
+		
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

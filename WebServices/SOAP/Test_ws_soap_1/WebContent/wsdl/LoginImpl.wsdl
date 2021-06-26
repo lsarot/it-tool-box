@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://controller.soap.ws.examples.LSO.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://controller.soap.ws.examples.LSO.com" xmlns:intf="http://controller.soap.ws.examples.LSO.com" xmlns:tns1="http://model.soap.ws.examples.LSO.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://model.soap.ws.examples.LSO.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <complexType name="BeanLogin">
+    <sequence>
+     <element name="mensaje" nillable="true" type="xsd:string"/>
+     <element name="pass" nillable="true" type="xsd:string"/>
+     <element name="user" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://controller.soap.ws.examples.LSO.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://model.soap.ws.examples.LSO.com"/>
+   <element name="b" type="tns1:BeanLogin"/>
+   <element name="validarLoginReturn" type="tns1:BeanLogin"/>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="validarLoginRequest">
+
+      <wsdl:part element="impl:b" name="b">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="validarLoginResponse">
+
+      <wsdl:part element="impl:validarLoginReturn" name="validarLoginReturn">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="LoginImpl">
+
+      <wsdl:operation name="validarLogin" parameterOrder="b">
+
+         <wsdl:input message="impl:validarLoginRequest" name="validarLoginRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:validarLoginResponse" name="validarLoginResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="LoginImplSoapBinding" type="impl:LoginImpl">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="validarLogin">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="validarLoginRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="validarLoginResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="LoginImplService">
+
+      <wsdl:port binding="impl:LoginImplSoapBinding" name="LoginImpl">
+
+         <wsdlsoap:address location="http://localhost:8080/test_ws_soap_1/services/LoginImpl"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

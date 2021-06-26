@@ -1,0 +1,77 @@
+JNI & JNA & IDL
+
+
+*** JAVA JNI *** Java Native Interface
+
+JNI (Java Native Interface) is a foreign function interface that allows code running on JVM to call (or be called by) native applications. Using JNI, one can call methods written in C/C++ or even access assembly language.
+
+Tan sólo cambiando la clase java que declara los métodos nativos (la interface), ya debemos recompilar para generar los .h y el .c .o .so correspondiente, pq cambió la firma de los métodos que hacen referencia al paquete.
+
+
+*** JAVA JNA *** Java Native Access
+
+JNA is an open source project that makes it possible for you to use native libraries using only Java code, with little to no C programming experience.
+JNA is much slower than JNI, but much easier. If performance is not an issue use JNA.
+
+While JNI is Java native approach to execute native code from Java (even has reserved word 'native'), JNA is an open source project library.
+https://github.com/java-native-access/jna
+
+Using JNI, you might just not have access to source code of the shared library (.so) you want to use. In that case, unless that library was written to support JNI, there’s not much you can do to make it work. JNA can actually enable you to do that, assuming you have access to native method signatures.
+
+
+*** JAVA IDL *** Interfece Description Language
+
+Java IDL o Java Interface Description Language es una implementación CORBA que permite que dos objetos interactúen sobre diferentes plataformas a través de una red. Java IDL al ser una interfaz permite que los objetos interactúen sin importar el lenguaje en que estén escritos, a diferencia de Java RMI que solo soporta objetos distribuidos escritos en Java.
+Esto se logra ya que Java IDL está basado en Common Object Request Brokerage Architecture (CORBA), un estándar para objetos distribuidos. CORBA fue definido y está controlado por el Object Management Group (OMG) que define las APIs, el protocolo de comunicaciones y los mecanismos necesarios para permitir la interoperatividad entre diferentes aplicaciones escritas en diferentes lenguajes y ejecutadas en diferentes plataformas, lo que es fundamental en computación distribuida.
+Para soportar la interacción entre objetos de programas separados, Java IDL proporciona un Object Request Broker (ORB) que es una biblioteca de clases que permite una comunicación de bajo nivel entre aplicaciones Java IDL y aplicaciones compatibles con CORBA.
+
+-------------------------------------------------
+
+													*** JAVA JNI *** Java Native Interface
+
+El archivo C que queramos ejecutar debe incluir la cabecera jni.h (#include <jni.h>). De esta forma, ya podrá trabajar con los diferentes objetos que ofrece JNI: jboolean, jbyte, jint, jobject, etc.
+
+Ahora bien, los métodos en C que queramos llamar desde el mundo Java deben seguir una sintaxis especial (no basta solo con importar JNI). Como esta sintaxis es un poco fuera de lo común, Java pone a nuestra disposición el comando Javah. Con este comando podemos, a partir de una clase Java, generar el archivo de encabezado (.h) de nuestro wrapper en C, y después simplemente debemos implementarlos.
+
+Entonces tenemos: .c (código en c), .h (headers generados por Javah)
+
+Código nativo debe ser escrito pensando en ser ejecutado desde un lenguaje aparte como Java.
+
+Requiere que manipules código nativo.
+
+Más sobre el proyecto demo.
+
+													*** JAVA JNA *** Java Native Access
+
+JNI es bastante fácil, pero es sensible a cualquier modificación.
+Tenemos que declarar sólo los métodos native como una interface,
+crear los .h que están fuertemente enlazados,
+encapsular el código C en un wrapper .o con métodos que siguen una sintáxis especial.
+
+Con JNA nos evitamos recompilar ante cualquier cambio y más aún si no podemos modificar el código nativo.
+
+
+													*** JAVA IDL *** Interfece Description Language
+
+Tema tratado en otro proyecto de manera básica.
+
+
+-------------------------------------------------
+
+Pros of JNI over JNA
+
+    .Allows you to access Java stuff through it’s rich API, enabling you to create Java class and invoke methods.
+    .No need to do anything extra on Java side other than generating JNI headers from source, which can be done in compile time and (hopefully) rarely. Most of the work is done on native side. It’s also worth mentioning that Stub generation may be skipped if you already know how to define JNI native methods (Or generate it then convert it to a C/C++ file and fill in the methods but it’s extra work). This is how it’s usually done in AOSP.
+    .JNI is way faster since JNA needs to do some dynamic generation at runtime (Not needing to provide a pre-generated stub becomes a disadvantage here).
+    .Can be used with C++ without doing any extra work (JNI does this by using Extern “C” in auto-generated header files in order to tell compiler to use C’s naming and calling conventions). JNA does not handle this by default, so it’s up to you to make it work.
+    .The most used method of calling native functions, so it’s the safer choice (Being a standard Java feature and all).
+
+Pros of JNA over JNI
+
+    .Doesn’t require you to touch native code once it’s compiled. All you need to do is adapt your JNA access interface on Java code in order to access whatever you need.
+    .Native code doesn’t need to be written with the intention to be called by Java. Because of this, you can easily import standard C libraries using JNA.
+    .Doesn’t require you to know about C language and compilation processes(possibly cross compilation as well). You are a Java developer, you want to write Java code, this is the method for you.
+    .Easier to get used to, requires less hassle to make it work. You simply grab the native library you need, add JNA dependency to your Maven/Gradle project and you’re good to go.
+
+
+

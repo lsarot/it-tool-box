@@ -1,0 +1,6 @@
+* SOME SOURCES.txt tiene algunas url de las páginas consultadas, otras están dentro de los proyectos como de constumbre
+* DOCKERIZAR.txt es una guía rápida para contenerizar mis apps y desplegarlas
+* microservices-demo es el proyecto principal
+	contiene lo principal de la arquitectura, DiscoveryService (Eureka), ApiGateway (Zuul), CircuitBreaker (Hystrix), HttpClients (FeignClient), y la utilización de Actuator para monitorizar las apps.
+* ribbon-load-balancer Zuul usa Ribbon como load balancer, pero si queremos usarlo separado de Zuul para un servicio llamar a otro
+* SpringCLoudConfigServer centralizar configuración de todas las apps en un repositorio, git usualmente.

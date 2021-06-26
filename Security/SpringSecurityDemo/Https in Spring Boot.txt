@@ -1,0 +1,120 @@
+ENABLING HTTPS ON SPRING BOOT APP
+
+With self-signed certificate or a CA certificate.
+
+-----------------------------
+SELF-SIGNED CERTIFICATE
+We will use either one of two formats: PKCS#12 or JKS(JavaKeyStore)
+-----------------------------
+PKCS#12 (https://en.wikipedia.org/wiki/PKCS_12)
+
+Defines an archive file format (.p12 or .pfx) for storing many cryptography objects as a single file. It is commonly used to bundle a private key with its X.509 certificate or to bundle all the members of a chain of trust.
+It enables buckets of complex objects such as PKCS #8 structures, nested deeply. But in practice it is normally used to store just one private key and its associated certificate chain. 
+
+Successor of Microsoft PFX format (very complex).
+
+A simpler, alternative format to PKCS #12 is PEM which just lists the certificates and possibly private keys as Base 64 strings in a text file.
+
+PKCS #12 files are usually created using OpenSSL, which only supports a single private key from the command line interface. The Java keytool can be used to create multiple "entries" since Java 8, but that may be incompatible with many other systems. As of Java 9, PKCS #12 is the default keystore format.
+
+-----------------------------
+JKS - only works on Java environments, better to use PKCS#12.
+
+-----------------------------
+To create PKCS#12 we use OpenSSL or Keytool (Java shipped tool)
+To create JKS we use Keytool
+
+----------------------------- 
+WE WILL USE JKS, to show both keystores creation
+* We can store as many numbers of key-pair in the same keystore each identified by a unique alias.
+PKCS#12 (recommended)
+keytool -genkeypair -alias myKeypairAlias -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore mykeystore.p12 
+		-validity 3650 -ext "SAN:c=DNS:localhost,IP:127.0.0.1"
+JKS
+keytool -genkeypair -alias myKeypairAlias -keyalg RSA -keysize 2048  -keystore mykeystore.jks
+		-validity 3650 -ext "SAN:c=DNS:localhost,IP:127.0.0.1"
+
+keytool -genkeypair -alias stackoverflow -keyalg RSA  -keysize 2048  -keystore mykeystore.jks -validity 3650 
+		-dname "CN=My Company Inc.,OU=IT department,O=City,C=US" //esta línea mejor que la pregunte el keytool 
+		-ext "SAN:c=DNS:localhost,IP:127.0.0.1" //hay que agregar localhost como SubjectAlternativeName
+		-storepass secret -keypass secret -deststoretype pkcs12
+
+To change an existing jks to pkcs12:
+keytool -importkeystore -srckeystore myjkskeystore.jks -destkeystore mypkcskeystore.p12 -deststoretype pkcs12
+	*We'll have to provide the source keystore password and also set a new keystore password. The alias and keystore password will be needed later.
+
+Investigar cómo agregar otro certificado a la misma KeyStore con KeyTool.
+
+Cómo revisar un PKCS12 file ?:
+https://knowledge.digicert.com/solution/SO5291.html
+openssl pkcs12 -in PKCS12file.p12 -out keys_out.txt
+
+-----------------------------
+CONFIGURING SPRING BOOT PROJECT
+
+We will copy mykeystore.p12 into the “src/main/resources/keystore” directory.
+
+Set this properties:
+
+security.require-ssl=true
+
+# The format used for the keystore. It could be set to JKS in case it is a JKS file
+server.ssl.key-store-type=PKCS12
+# The path to the keystore containing the certificate
+server.ssl.key-store=classpath:keystore/mykeystore.p12
+# The password used to generate the certificate
+server.ssl.key-store-password=password
+# The alias mapped to the certificate
+server.ssl.key-alias=httpsdemo
+
+
+#we need to create a trust store. As we have generated a PKCS12 file, we can use the same as the trust store.
+#(esto es del cliente)
+#trust store location
+trust.store=classpath:keystore/mykeystore.p12
+#trust store password
+trust.store.password=password
+
+-----------------------------
+Test your endpoint:
+
+Prepare an SSLContext with the trust store and create a customized RestTemplate:
+
+RestTemplate restTemplate() throws Exception {
+    SSLContext sslContext = new SSLContextBuilder()
+      .loadTrustMaterial(trustStore.getURL(), trustStorePassword.toCharArray())
+      .build();
+    SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslContext);
+    HttpClient httpClient = HttpClients.custom()
+      .setSSLSocketFactory(socketFactory)
+      .build();
+    HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+    return new RestTemplate(factory);
+}
+
+@Test
+public void whenGETanHTTPSResource_thenCorrectResponse() throws Exception {
+    ResponseEntity<String> response = 
+      restTemplate().getForEntity(WELCOME_URL, String.class, Collections.emptyMap());
+ 
+    assertEquals("<h1>Welcome to Secured Site</h1>", response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+}
+
+-----------------------------
+COMO EL CERTIFICADO ES AUTOFIRMADO, EL EXPLORADOR NOS ADVIERTE:
+
+Código de error: MOZILLA_PKIX_ERROR_SELF_SIGNED_CERT
+https://localhost:8443/welcome
+No se confía en el certificado porque está autofirmado.
+Seguridad estricta de transporte HTTP: false
+Pinning de clave pública HTTP: false
+Cadena de certificados:
+-----BEGIN CERTIFICATE-----
+MIIDnjCCAoagAwIBAgIEJu2oNTANBgkqhkiG9w0BAQsFADBwMQswCQYDVQQGEwJV
+UzETMBEGA1UECBMKQ2FsaWZvcm5pYTESMBAGA1UEBxMJQ3VwZXJ0aW5vMRUwEwYD
+VQQKEwxDb21wYW55IEluYy4xDzANBgNVBAsTBklUIGRlcDEQMA4GA1UEAxMHTGVv
+...
+-----END CERTIFICATE-----
+
+

@@ -1,0 +1,49 @@
+:::::::: REDIS CLI QUICK GUIDE ::::::::
+
+SET key value|"value"
+EXISTS key
+DEL key
+
+INCR key (numeric one)
+INCRBY key 10
+DECR key
+DECRBY key 5
+
+EXPIRE key seconds (PEXPIRE for ms)
+SET key value [EX sec] (directly)
+TTL key (get remaining time) (PTTL for ms) (-2 if already died, -1 if never dies)
+PERSIST key (to cancel expiration)
+
+LISTA (ordenados)
+	LPUSH (izq), RPUSH (der), LPOP, RPOP, LLEN (qtty), LRANGE (retrieve)
+	LPUSH friends "Leo"
+	LRANGE friends 0 -1 (begin, end) (-1 means all, -2 means until penultimate and so forth, positive closing index is position of course)
+	LPUSH 1 2 3 (multiple insertions)
+
+SET (desordenados, no repiten)
+	SADD, SREM, SISMEMBER, SMEMBERS, SUNION (combines 2+ sets and returns items)
+		set permite igual múltiple inserción
+	SPOP (removes random)
+	SRANDMEMBER (retrieves random member)
+
+ORDERED SET (ordenado, no repiten)
+	ZADD hackers 1940 "Alan Kay" (ordenado por primer valor)
+	ZADD hackers 1906 "Grace Hopper"
+	ZADD hackers 1953 "Richard Stallman"
+	ZADD hackers 1965 "Yukihiro Matsumoto"
+	ZRANGE hackers 1 3
+
+HASHSET (ideal para guardar objetos como un mapa key-value) (https://redis.io/commands#hash)
+	HMSET user:1001 name "Mary Jones" password "hidden" email "mjones@example.com" (note the HMSET instead of HSET)
+	or
+	HSET user:1000 name "John Smith"
+    HSET user:1000 email "john.smith@example.com"
+    HSET user:1000 password "s3cret"
+    HSET user:1000 visits 10 (could be incremented/decremented atomically)
+	HGETALL user:1000
+	HGET user:1001 name
+	HINCRBY user:1000 visits 2 (increment by 2)
+	HDEL user:1000 visits
+
+
+

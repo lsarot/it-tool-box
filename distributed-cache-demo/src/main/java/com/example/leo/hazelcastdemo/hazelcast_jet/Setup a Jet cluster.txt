@@ -1,0 +1,43 @@
+:::: LOCALHOST ::::
+
+:::: As a Java process
+
+	wget https://github.com/hazelcast/hazelcast-jet/releases/download/v4.2/hazelcast-jet-4.2.tar.gz
+	tar zxvf hazelcast-jet-4.2.tar.gz
+	cd hazelcast-jet-4.2
+	bin/jet-start   [-d](daemon process)
+
+In another terminal
+	bin/jet cluster (to see cluster state)
+	
+The distribution package also contains a pre-packaged Jet job in a JAR that you can use to quickly verify the installation. You can submit it like this:
+	bin/jet submit examples/hello-world.jar
+
+*** If we run another bin/jet-start we'll have another node in the cluster :)
+
+
+:::: As a Docker image
+
+	docker run hazelcast/hazelcast-jet   (official image)
+se mostrará la IP del nodo levantado
+	cd <jet_home>
+	docker run -it -v "$(pwd)"/examples:/examples hazelcast/hazelcast-jet jet -t <IP del nodo> submit examples/hello-world.jar
+
+
+
+:::: REMOTE ::::
+
+
+
+
+
+:::: MISC COMMANDS ::::
+
+bin/jet cluster (to see cluster state)
+
+bin/jet list-jobs
+docker run -it hazelcast/hazelcast-jet jet -t 172.17.0.2 list-jobs
+
+bin/jet cancel <job-id>
+
+

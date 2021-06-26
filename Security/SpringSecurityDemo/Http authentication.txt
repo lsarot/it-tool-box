@@ -1,0 +1,140 @@
+HTTP BASIC AUTHENTICATION
+
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication
+https://es.wikipedia.org/wiki/Autenticaci%C3%B3n_de_acceso_b%C3%A1sica
+
+HTTP provides  a general framework for access control and authentication. The most common is based on the "Basic" schema.
+
+------------------- Common flow:
+
+Client sends a request w/o Authorization header.
+The server responds to a client with a 401 Unauthorized response status and provides information on how to authorize with a WWW-Authenticate response header containing at least one challenge. A client that wants to authenticate itself with a server can then do so by including an Authorization request header field with the credentials. Usually a client will present a password prompt to the user and will then issue the request including the correct Authorization header. Server responds with 200 OK or 403 Forbidden.
+(This behavior can be changed sending credentials beforehand, if we know the type of auth needed by the server!).
+
+In the case of a "Basic" authentication, the exchange must happen over an HTTPS (TLS) connection to be secure. Pq se envían base64 encoded solamente.
+
+Si usamos un proxy intermedio, puede hacer falta auth al cliente y al proxy frente al servidor.
+Ahora entre cliente y proxy los headers y response codes son: 407 y se envía header Proxy-Authenticate, y se responde en header Proxy-Authorization.
+
+401 Unauthorized: credenciales malas.
+403,407 Forbidden: credenciales OK, pero no tiene permiso para ese recurso.
+
+------------------- headers template:
+
+Server/Proxy:
+WWW-Authenticate: <type> realm=<realm>
+Proxy-Authenticate: <type> realm=<realm>  
+(type es Basic u otro, como Digest)
+Client:
+Authorization: <type> <credentials>
+Proxy-Authorization: <type> <credentials>
+
+------------------- Authentication Schemes:
+
+.Basic (base64-encoded credentials)
+.Bearer (bearer tokens to access OAuth 2.0-protected resources)
+.Digest (only md5 hashing is supported in Firefox, see bug 472823 for SHA encryption support)
+.HOBA (HTTP Origin-Bound Authentication, digital-signature-based)
+.Mutual
+.AWS4-HMAC-SHA256 (see AWS docs).
+
+------------------- Activate Basic Auth in Apache and Nginx:
+
+Apache:
+- The .htaccess file typically looks like this:
+AuthType Basic
+AuthName "Access to the staging site"
+AuthUserFile /path/to/.htpasswd
+Require valid-user
+- The .htpaswd file:
+aladdin:$apr1$ZjTqBB3f$IF9gdYAGlMrs2fuINjHsz.  (md5 encrypted)
+user2:$apr1$O04r.y2H$/vEkesPhVInBByJUkXitA/
+
+Nginx:
+- The .htaccess:
+location /status {                                       
+    auth_basic     "Access to the staging site";
+    auth_basic_user_file /etc/apache2/.htpasswd;
+}
+
+------------------- MORE ON BASIC-AUTH PASSWORDS FOR APACHE:
+https://httpd.apache.org/docs/2.4/misc/password_encryptions.html
+
+Apache (Web server) recognizes 5 formats. Not all works on all platforms:
+
+1. bcrypt ($2y$ + algo)
+2. MD5 ($apr1$ + max8digit salt + algo)
+3. SHA1 ({SHA} + b64-encoded SHA1 digest of the psw) (INSECURE)
+4. CRYPT (2d salt + algo) (INSECURE) (Unix only)
+5. Plain text (INSECURE) (unencrypted)
+
+Podemos generar las psw con unas herramientas (CLI) que incluye Apache (htpasswd y openssl) o Spring CLI también,
+o con un lenguaje de programación en algunos casos si es Apache compliant el algoritmo que use (si las usaremos para el servidor web Apache que es de lo que trataba el tema).
+
+1. htpasswd
+
+bcrypt
+$ htpasswd -nbB myName myPassword
+myName: $2y$05$c4WoMPo3SXsafkva.HHa6uXQZWr7oboPiC2bT/r7q1BB8I2s0BRqC
+MD5
+$ htpasswd -nbm myName myPassword
+myName: $apr1$r31.....$HqJZimcKQFAMYayBlzkrA/
+SHA1
+$ htpasswd -nbs myName myPassword
+myName: {SHA}VBPuJHI7uixaa6LQGWx4s+5GKNE=
+CRYPT
+$ htpasswd -nbd myName myPassword
+myName: rqXexS6ZhobKA 
+
+2. openssl
+
+MD5
+$ openssl passwd -apr1 myPassword
+$apr1$qHDFfhPC$nITSVHgYbDAK1Y0acGRnY0
+CRYPT
+$ openssl passwd -crypt myPassword
+qQ5vTYO3c8dsU 
+
+3. Spring CLI (ES MEJOR USAR UNA HERRAMIENTA EXTERNA PARA GENERAR EL HASH, PQ SINO QUEDAN LAS PSW EN MEMORIA EN EL SERVIDOR DE LA APP)
+https://docs.spring.io/spring-boot/docs/current/reference/html/getting-started.html#getting-started-installing-the-cli
+
+$ spring encodepassword myPassword
+{bcrypt}$2a$10$X5wFBtLrL/kHcmrOGGTrGufsBX8CJ0WpQpF3pgeuxBB/H73BK1DW6
+
+
+Podemos validar las psw con 
+openssl (MD5 y CRYPT):
+MD5 (validaremos myPassword, tenemos que saber el salt, que está entre $ y $ de la generada arriba, por openssl o htpasswd)
+$ openssl passwd -apr1 -salt r31..... myPassword
+$apr1$r31.....$HqJZimcKQFAMYayBlzkrA/
+CRYPT (validaremos myPassword, el salt son los 2 primeros dígitos)
+$ openssl passwd -crypt -salt rq myPassword
+Warning: truncating password to 8 characters //dá igual si evalúa myPassword o myPasswo !!!
+rqXexS6ZhobKA
+
+
+To create a database psw in JAVA, when using mod_dbd, for Apache DB conn:
+
+Basic Authentication:
+"{SHA}" + new sun.misc.BASE64Encoder().encode(java.security.MessageDigest.getInstance("SHA1").digest(password.getBytes()));
+Parece que se configura Apache Web Server para que conecte con una dbase y valide las credenciales de acceso a un recurso del servidor web.
+No es segura, usa SHA1.
+
+Digest Authentication:
+byte b[] = java.security.MessageDigest.getInstance("MD5").digest( (user + ":" + realm + ":" + password ).getBytes());
+java.math.BigInteger bi = new java.math.BigInteger(1, b);
+String s = bi.toString(16);
+while (s.length() < 32)
+	s = "0" + s; // String s is the encrypted password 
+
+
+Spring Boot PasswordEncoderFactories.createDelegatingPasswordEncoder() también las guarda prefixed con el algoritmo utilizado.
+
+{bcrypt}$2a$10$dXJ3SW6G7P50lGmMkkmwe.20cQQubK3.HZWzG3YB1tlRy.fqvM/BG 
+{noop}password //no encriptada
+{pbkdf2}5d923b44a6d129f3ddf3e3c8d29412723dcbde72445e8ef6bf3b508fbf17fa4ed4d6b99ca763d8dc 
+{scrypt}$e0801$8bWJaSu2IKSn9Z9kM+TPXfOc/9bdYSrN1oD9qfVThWEwdRTnO7re7Ei+fUZRJ68k9lTyuTeUp4of4g24hHnazw==$OAOec05+bXxvuu/1qZ6NUR+xQYvYv7BeL1QxwRpY5Pc=  
+{sha256}97cde38028ad898ebc02e690819fa220e88c62e0699403e94fff291cfffaf8410849f27605abcbc0 
+
+
+

@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+https://logging.apache.org/log4j/2.x/log4j-users-guide.pdf
+https://logging.apache.org/log4j/2.x/manual
+https://logging.apache.org/log4j/2.x/manual/configuration.html
+https://logging.apache.org/log4j/2.x/manual/appenders.html
+https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout
+-->
+
+<!-- Levels: ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF -->
+<Configuration 
+	status="INFO"
+	packages="com.example.codigosbasicos.logging.log4j2.cassandra_custom_appender">
+<!--
+status="The level of internal Log4j events that should be logged to the console"
+monitorInterval="interval in secs to check for changes in this config file. Useful to add an appender without turn app down"
+packages="packages to check for custom appenders" 
+-->
+
+	<Properties>
+    	<Property name="filename">target/test.log</Property><!-- just an example, not in use! -->
+  	</Properties>
+
+
+    <Appenders>
+    
+    	# CONSOLE APPENDER
+        <Console name="stdout" target="SYSTEM_OUT">
+        	#you can use any name, ie. console instead of stdout, but output will always be directed to System.out
+        	#"SYSTEM_OUT" or "SYSTEM_ERR". The default is "SYSTEM_OUT".
+            #Pattern of log message for console appender.. %d determines date pattern, %p – output of log level, %m – output of logged message and %n – adds new line symbol.
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %p %c{...3} %m%n"/>
+            	#COLORES: pattern="%style{%d{ISO8601}}{white} %highlight{%-5level} [%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"
+            	#SÓLO SE VEN EN CONSOLA (Unix-based), no la del IDE
+            		#While Unix-based operating systems such as Linux and Mac OS X support ANSI color codes by default, on a Windows console everything will be sadly monochromatic.
+            		#Windows can obtain ANSI colors through a library called JANSI.
+            		#https://www.baeldung.com/spring-boot-logging#jansi-on-windows
+
+            #https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout
+            #%logger{x}, %c -> logger name (usually el FQCN). Try with %c{1} %c{2} %c{10} %c{-1} %c{-2} %c{-10} %c{1.} %c{1} %c{1.1.~.~} %c{.}
+            #siempre muestra el nombre de la clase!, cómo muestra el package es lo que cambia:   . , .3 , 3. , 1.3 , 2 , -2 , 2.2.~.~
+                #{.}   muestra puros .
+                #{.3}  empieza con . y los sigs usan 3 letras
+                #{3.}  muestra todos y con 3 letras
+                #{1.3} el primero 1 letra, los sigs 3 letras
+                #{2}   no sé, muestra el último solamente
+                #{-2}  elimina 2 primeros
+                #{2.2.~} primeros 2 con 2 letras y sigs con ~
+                #{...3} primeros 3 son . y el resto 3 letras
+                # es básicamente, de izq a der, aplica a cada package y, el último al resto
+            #%-15p -> log level. 15 letras incluyendo espacio desde que escribe p hasta el próximo valor
+            #%t -> outputs the name of the thread that generated the logging event
+            #%location -> location related information (%class, %file, %method, %line are all expensive tasks)
+            #%ex -> exception message if present
+                #%throwable{short} -> outputs the first line of the Throwable.
+                #%throwable{n} -> outputs the first n lines of the stack trace.
+            #...
+        </Console>
+
+
+        # FILE APPENDERS
+        <File name="fout" fileName="log4j/target/leo-log4j2-new.log" immediateFlush="false" append="true">
+        	<!-- Async Loggers will auto-flush in batches, so switch off immediateFlush. -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p %c{1.} %m%n"/>
+        </File>
+    	
+		<!-- The RandomAccessFileAppender is similar to the standard FileAppender except it is always buffered (this cannot be switched off) and internally it uses a ByteBuffer + RandomAccessFile instead of a BufferedOutputStream.
+		We saw a 20-200% performance improvement compared to FileAppender with "bufferedIO=true" in our measurements. Similar to the FileAppender, RandomAccessFileAppender uses a RandomAccessFileManager to actually perform the file I/O.
+		While RandomAccessFileAppender from different Configurations cannot be shared, the RandomAccessFileManagers can be if the Manager is accessible. For example, two web applications in a servlet container can have their own configuration and safely write to the same file if Log4j is in a ClassLoader that is common to both of them. -->
+		<RandomAccessFile name="RandomAccessFile" fileName="log4j/target/leo-log4j2-RAF-new.log" immediateFlush="false" append="true">
+			<PatternLayout>
+				<Pattern>%d %p %c{1.} [%t] %m %ex%n</Pattern>
+			</PatternLayout>
+		</RandomAccessFile>
+
+
+        # ROLLING FILE APPENDERS
+        # https://www.baeldung.com/java-logging-rolling-file-appenders
+        # files separated by size
+        <RollingFile name="roll-by-size"
+            fileName="target/log4j2/roll-by-size/app.log"
+            filePattern="target/log4j2/roll-by-size/app.%i.log.gz"
+            ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 KB"/>
+            </Policies>
+        </RollingFile>
+		# files separated by time (each minute)
+        <RollingFile name="roll-by-time"
+            fileName="target/log4j2/roll-by-time/app.log"
+            filePattern="target/log4j2/roll-by-time/app.%d{MM-dd-yyyy-HH-mm}.log.gz"
+            ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy/>
+        </RollingFile>
+		# files separated by time and size
+        <RollingFile name="roll-by-time-and-size"
+            fileName="target/log4j2/roll-by-time-and-size/app.log"
+            filePattern="target/log4j2/roll-by-time-and-size/app.%d{MM-dd-yyyy-HH-mm}.%i.log.gz"
+            ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss} %p %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 KB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            #aquí parece que dice que cree uno nuevo si el último tiene ya 20s de last modified
+            <DefaultRolloverStrategy>
+                <Delete basePath="${baseDir}" maxDepth="2"><!-- baseDir sería un property declarado arriba -->
+                    <IfFileName
+                        glob="target/log4j2/roll-by-time-and-size/app.*.log.gz"/>
+                    <IfLastModified age="20s"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+
+        # CASSANDRA APPENDER (customized with LOCAL_QUORUM for aws-keyspaces)
+        # https://logging.apache.org/log4j/2.x/manual/appenders.html#SSL	no hizo falta configurar keystore
+		<!-- NO probamos con DataStax ASTRA, PQ DEBÍAMOS MODIFICAR EL PROCESO DE LA CONEXIÓN EN EL CUSTOM APPENDER POR ALGUNA RAZÓN! -->
+		<!-- Cassandra no gusta mucho ya que trae limitantes en las posibles queries, AWS keyspaces más limitantes aún (ie. no poder hacer or, groupby) -->
+        <CassandraCustom name="Cassandra" 
+        	clusterName="Test Cluster" 
+        	keyspace="logger_messages_test" table="logs"
+        	bufferSize="2" batched="true" batchType="UNLOGGED"
+        	username="keyspaces-user.20200629-111000-at-462238265653"
+        	password="j+KOs/ic1..."
+        	useTls="true">
+	      <SocketAddress host="cassandra.us-east-1.amazonaws.com" port="9142"/>
+	      <ColumnMapping name="id" pattern="%uuid{TIME}" type="java.util.UUID"/>
+	      <ColumnMapping name="timeid" literal="now()"/>
+	      <ColumnMapping name="message" pattern="%message"/>
+	      <ColumnMapping name="level" pattern="%level"/>
+	      <ColumnMapping name="marker" pattern="%marker"/>
+	      <ColumnMapping name="logger" pattern="%logger"/>
+	      <ColumnMapping name="timestamp" type="java.util.Date"/>
+	      <ColumnMapping name="mdc" type="org.apache.logging.log4j.spi.ThreadContextMap"/>
+	      <ColumnMapping name="ndc" type="org.apache.logging.log4j.spi.ThreadContextStack"/>
+	    </CassandraCustom>
+        
+        
+        # MONGODB APPENDER
+        <NoSql name="MongoDb">
+            #databaseName y collectionName son obligatorios
+            #pero, si especifico factoryClassName y factoryMethodName, no usará el databaseName, collectionName sigue siendo necesario aquí
+            <MongoDb3 databaseName="logger_messages_test"
+                      collectionName="logs"
+                      factoryClassName="com.example.codigosbasicos.logging.log4j2.mongodb_conn_factory.MongoDbConnectionFactory"
+                      factoryMethodName="getNewMongoClient" />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %p %c{...3} %m%n"/>#pattern parece que no aplica para bbdd.
+	    </NoSql>
+        <!-- NO FUNCIONÓ !!!
+        <NoSql name="MongoDb">
+            <MongoDb3 databaseName="logger_messages"
+                      collectionName="server_log"
+                      server="freecluster-shard-00-00-lmrqj.mongodb.net"
+                      port="27017"
+                      username="..."
+                      password="..." />
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %p %c{...3} %m%n"/>#pattern parece que no aplica para bbdd.
+	    </NoSql>-->
+
+        
+        # FAILOVER APPENDERS
+		#The FailoverAppender wraps a set of appenders. If the primary Appender fails the secondary appenders will be tried in order until one succeeds or there are no more secondaries to try.
+		<Failover name="Failover1" primary="RandomAccessFile">
+			<Failovers>
+				<AppenderRef ref="stdout" />
+			</Failovers>
+		</Failover>
+        <Failover name="Failover2" primary="Cassandra">
+			<Failovers>
+				<AppenderRef ref="stdout" />
+			</Failovers>
+		</Failover>
+    
+    </Appenders>
+
+    <Loggers>
+    	
+    	#Tenemos nodos Root, AsyncRoot, Logger, AsyncLogger
+    	#podemos combinar varios Logger y AsyncLogger, pero sólo 1 Root o AsyncRoot
+    	
+        #-------------------- Override log level for specific packages (will override level on Root node for a package)
+        ## overriding for a package is just setting name="package.name or package.name.ClassName"
+        ## Root debe ir más abajo que los otros en este fichero!
+        ## Logger node tiene que tener un name
+        
+        <!-- 
+        <Logger name="com.example.codigosbasicos.logging.log4j2" level="INFO"/>
+        -->
+        
+		<!--<Logger name="com.example.codigosbasicos.logging.log4j2.Log4j2RollingExample" level="TRACE">
+            <AppenderRef ref="roll-by-size"/>
+            <AppenderRef ref="roll-by-time"/>
+            <AppenderRef ref="roll-by-time-and-size"/>
+        </Logger>-->
+		
+		#-------------------- Synchronous Loggers
+		# We can use just 1 Root or AsyncRoot node
+	    # to enable an appender (or multiple)
+	    # we can use many Logger
+	    <!--<Root level="ERROR">#this will be root level
+		    <AppenderRef ref="stdout"/>
+		</Root>-->
+		<!--<Root level="INFO" includeLocation="false"> #Extracting location is an expensive operation (it can make logging 5-20 times slower on synchronous and 30-100 times slower on asynchronous)
+		    <AppenderRef ref="stdout" />
+		    <AppenderRef ref="fout"/>
+		</Root>-->
+		
+		#-------------------- Asynchronous Loggers
+		#If you want to use LMAX disruptor you need to use AsyncRoot instead of Root in your configuration.
+		#Or you can enable asynchronous logging by setting the system property Log4jContextSelector to org.apache.logging.log4j.core.async.AsyncLoggerContextSelector.
+		#https://logging.apache.org/log4j/2.x/manual/async.html
+        <!--<AsyncRoot level="DEBUG">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="fout"/>
+        </AsyncRoot>-->
+		
+		#-------------------- Mixed Sync/Async Loggers
+		<!-- Synchronous and asynchronous loggers can be combined in configuration. This gives you more flexibility at the cost of a slight loss in performance (compared to making all loggers asynchronous).
+		Use the <asyncRoot> or <asyncLogger> configuration elements to specify the loggers that need to be asynchronous. A configuration can contain only one root logger (either a <root> or an <asyncRoot> element), 
+		but otherwise async and non-async loggers may be combined. For example, a configuration file containing <asyncLogger> elements can also contain <root> and <logger> elements for the synchronous loggers. -->
+		<!-- pattern layout actually uses location, so we need to include it --> #Extracting location is an expensive operation (it can make logging 5-20 times slower on synchronous and 30-100 times slower on asynchronous)
+	    <!--<AsyncLogger name="com.example.codigosbasicos.logging.log4j2.Log4j2Example" level="trace" includeLocation="false">
+	      	<AppenderRef ref="stdout"/>
+	      	<AppenderRef ref="fout"/>
+	    </AsyncLogger>-->
+	    <AsyncLogger level="DEBUG" name="com.example.codigosbasicos.logging.log4j2" additivity="false">#additivity="false" evita que se propague al paquete padre, es decir, no se imprima por appender root por ejemplo o por otro appender configurado para algún paquete padre
+	      	<AppenderRef ref="MongoDb"/>
+	      	<AppenderRef ref="stdout"/>
+	    </AsyncLogger>
+	    <Logger level="INFO" name="com.example.codigosbasicos.caching">
+	    	<AppenderRef ref="stdout"/>
+	    </Logger>
+	    
+	    <Root level="INFO" includeLocation="false">
+	    	<!--<AppenderRef ref="stdout"/>-->
+	      	<!--<AppenderRef ref="Failover1"/>-->
+	    </Root>
+		
+    </Loggers>
+    
+</Configuration>
+
+
+
+<!-- |.....................................................| -->
+
+<!-- ESTA PARA LOG4J 1 .. log4j.xml -->
+
+<!--
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
+<log4j:configuration debug="false">
+-->
+    <!--Console appender -->
+    <!--
+    <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+        </layout>
+    </appender>
+    -->
+
+    <!-- File appender -->
+	<!--
+    <appender name="fout" class="org.apache.log4j.FileAppender">
+        <param name="file" value="log4j/target/baeldung-log4j.log"/>
+        <param name="append" value="false"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n"/>
+        </layout>
+    </appender>
+	-->
+
+    <!-- Rolling appenders -->
+	<!--
+    <appender name="roll-by-size" class="org.apache.log4j.RollingFileAppender">
+        <param name="file" value="target/log4j/roll-by-size/app.log"/>
+        <param name="MaxFileSize" value="5KB"/>
+        <param name="MaxBackupIndex" value="2"/>  #It's one by default.
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n"/>
+        </layout>
+    </appender>
+    <appender name="roll-by-size-2" class="org.apache.log4j.RollingFileAppender">
+        <param name="file" value="target/log4j/roll-by-size-2/app.log"/>
+        <param name="MaxFileSize" value="5KB"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n"/>
+        </layout>
+    </appender>
+    <appender name="roll-by-window"
+        class="org.apache.log4j.rolling.RollingFileAppender">
+        <rollingPolicy
+            class="org.apache.log4j.rolling.FixedWindowRollingPolicy">
+            <param name="ActiveFileName" value="target/log4j/roll-by-window/app.log"/>
+            <param name="FileNamePattern"
+                value="target/log4j/roll-by-window/app.%i.log.gz"/>
+            <param name="MinIndex" value="7"/>
+            <param name="MaxIndex" value="17"/>
+        </rollingPolicy>
+        <triggeringPolicy
+            class="org.apache.log4j.rolling.SizeBasedTriggeringPolicy">
+            <param name="MaxFileSize" value="50000"/>
+        </triggeringPolicy>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p %m%n"/>
+        </layout>
+    </appender>
+    <appender name="roll-by-time"
+        class="org.apache.log4j.rolling.RollingFileAppender">
+        <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+            <param name="FileNamePattern"
+                value="target/log4j/roll-by-time/app.%d{HH-mm}.log.gz"/>
+        </rollingPolicy>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n"/>
+        </layout>
+    </appender>
+    <appender name="roll-by-time-and-size"
+        class="org.apache.log4j.rolling.RollingFileAppender">
+        <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+            <param name="FileNamePattern"
+                value="target/log4j/roll-by-time-and-size/app.%d{HH-mm}.%i.log.gz"/>
+        </rollingPolicy>
+        <triggeringPolicy
+            class="org.apache.log4j.rolling.SizeBasedTriggeringPolicy">
+            <param name="MaxFileSize" value="50000"/>
+        </triggeringPolicy>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p - %m%n"/>
+        </layout>
+    </appender>
+	-->
+
+    <!--Override log level for specified package -->
+    <!--
+    <category name="com.baeldung.log4j">
+        <priority value="TRACE"/>
+    </category>
+
+    <category name="com.baeldung.log4j.Log4jRollingExample">
+        <priority value="TRACE"/>
+        <appender-ref ref="roll-by-size"/>
+        <appender-ref ref="roll-by-size-2"/>
+        <appender-ref ref="roll-by-window"/>
+        <appender-ref ref="roll-by-time"/>
+        <appender-ref ref="roll-by-time-and-size"/>
+    </category>
+
+    <root>
+        <level value="DEBUG"/>
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="fout"/>
+    </root>
+	-->
+<!--
+</log4j:configuration>
+-->

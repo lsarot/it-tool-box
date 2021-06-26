@@ -1,0 +1,169 @@
+
+ANÁLISIS MOCKEO DE OBJETOS Y CÓDIGO CON MÉTODOS STATIC
+
+***** CONCLUSIÓN/SOLUCIÓN AL FINAL!!!
+
+
+Un problema a la hora de hacer test no es que sean static-methods, sino que se instancien objetos dentro de un método, en vez de pasárselos como parámetro o al constructor si es instance-method.
+Esto porque no podemos mockearlos al ser instanciados dentro.
+Ahora, si se debe usar un método static dentro de un método (third-party library), digamos Math.sum, podemos mockearlo usando un wrapper-interface, y pasándole dicha interface mockeada (ej. más adelante).
+
+Otra dificultad es que, digamos que queremos probar una funcionalidad de un sistema, y queremos partir desde un método intermedio el cual instancia objetos (en vez de pasárselos) (si es un método de un evento onClick (difícil pasarle parámetros extras, tendrá que acceder a variables a nivel de clase o instancia) o que no queremos meternos más atrás en el código), si queremos sacar esos objetos y pasárselos, luego habrá que ver quienes llamaban a ese método e ir pasando el objeto desde atrás... si el método es de instancia, quizás podemos dejar el objeto a nivel global (no dentro del método) y que sea accesible desde cualquier punto del programa, pero en métodos static, no podrán acceder a variables de instancia, 
+y si hacemos ese objeto static ?? se podrá mockear el objeto y hacer Clase.objeto = mockedObject ??
+SÍ, pero empezamos a romper el código, quizás cada método debe tener una instancia diferente de dicho objeto, ya sea porque múltiples threads acceden al método a la vez u otra razón.
+Normalmente se hacen globales y de instancia y se inyectan o asignan con constructor o setter, como en la demo de Mockito.
+
+-------------------------------------------------
+
+// Por qué no se puede mockear el método static ?? CON MOCKITO U OTRAS LIBRERÍAS
+
+I think the reason may be that mock object libraries typically create mocks by dynamically creating classes at runtime (using cglib). This means they either implement an interface at runtime (that's what EasyMock does if I'm not mistaken), or they inherit from the class to mock (that's what Mockito does if I'm not mistaken). Both approaches do not work for static members, since you can't override them using inheritance.
+//Creo un mock de MiClase, podré mockear los métodos no static, pero no los static.
+//Aún así puedo probar los métodos static si sigo lo mencionado antes de pasar por argumentos, pero lo recomendado es no hacer los métodos static nunca, sólo en clases utility.
+
+It isn't by design that Mockito (or EasyMock, or jMock) does not support mocking static methods, but by accident. This limitation (along with no support for mocking final classes/methods, or new-ed objects) is a natural (but unintended) consequence of the approach employed to implement mocking, where new classes are dynamically created that implement/extend the type to be mocked; other mocking libraries use other approaches which avoid these limitations. This happened in the .NET world as well.
+
+
+public class MySQLDatabaseConnectionFactory implements DatabaseConnectionFactory {
+
+    @Override public Connection getConnection() {
+        try {
+            return DriverManager.getConnection(...); //se quisiera mockear
+        } catch (SQLException e) { throw new RuntimeException(e); }
+    }
+}
+//se quisiera mockear DriverManager.getConnection expecificamente, porque MySQLDatabaseConnectionFactory es mockeable!
+
+
+-------------------------------------------------
+
+// HERRAMIENTA DISPONIBLE POWERMOCK
+
+Se menciona una librería que trabaja en conjunto con Mockito..
+For mocking static methods, you can use PowerMock + Mockito
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({DriverManager.class,...})
+public class Mocker {
+
+    @Test
+    public void shouldVerifyParameters() throws Exception {
+        //given
+        PowerMockito.mockStatic(DriverManager.class);
+        BDDMockito.given(DriverManager.getConnection(...)).willReturn(...); //PARECE DE MOCKITO 1, LA 2 USA Mockito.when
+        //when
+        sut.execute(); // System Under Test (sut)
+        //then
+        PowerMockito.verifyStatic();
+        DriverManager.getConnection(...);//se hace el llamado justo luego de declarar que vas a verificar algo, más detalles en demo/test
+    }
+}
+//FYI, if you're already using JUnit4 you can do @RunWith(PowerMockRunner.class) and below that @PowerMockRunnerDelegate(JUnit4.class)
+
+-------------------------------------------------
+
+// FORMA DE RESOLVER SIN POWERMOCK, USO DE WRAPPERS
+
+//Otro opina que:
+- Static methods to access common functionality? -> Use a singleton instance and inject that
+- Third party code? -> Wrap it into your own interface/delegate (and if necessary make it a singleton, too)
+
+//pero el uso de Singleton trae problemas también para testing! (los reuno en otro documento)
+
+Ejemplo de wrapper mencionado arriba:
+
+public interface IMath { int sin(int a); }
+public class MathImpl implements IMath { // wrapper interface IMath
+	public int sin(int a) { return Math.sin(a); }
+}
+public int method(IMath mathImpl, int a) { // pass your wrapper interface mocked, it uses the real impl of the method, in this case static Math.sin(..)
+	return mathImpl.sin(a);	//le paso la impl real o una mockeada!
+}
+
+-------------------------------------------------
+
+// OTRO AUTOR SOBRE SOLUCIÓN CON WRAPPER
+
+The typical strategy for dodging static methods that you have no way of avoiding using, is by creating wrapped objects and using the wrapper objects instead.
+
+The wrapper objects become facades to the real static classes, and you do not test those.
+A wrapper object could be something like:
+
+public class DriverManagerWrapper {//INSTANCIO MI WRAPPER O LO MOCKEO EN PRUEBAS
+
+    public static final DriverManagerWrapper SINGLETON = new DriverManagerWrapper();
+
+    public Connection getConnection() {
+        return DriverManager.getConnection(); //static method
+    }
+}
+
+INSTANCIO IMPL REAL EN CONTRUCTOR (DESDE UN SINGLETON O NO)
+	O MEJOR PASARLE LA IMPLEMENTACIÓN ;) Y CON UN SÓLO CONSTRUCTOR PUEDO PASAR IMPL REAL O MOCK
+Finally, your class under test can use this singleton object by, for example, having a default constructor for real life use:
+
+public class SomeClassUnderTest {
+    final DriverManagerWrapper myMockableObject;
+
+    /** constructor used by CDI or whatever real life use case */
+    public SomeClassUnderTest() {
+        this.myMockableObject = DriverManagerWrapper.SINGLETON; //cuando no es test, se obtiene de un singleton
+        //o puede ser no singleton
+        //this.myMockableObject = new DriverManagerWrapper();
+    }
+
+    /** constructor used in tests*/
+    public SomeClassUnderTest(DriverManagerWrapper myMock) {
+        this.myMockableObject = myMock; //cuando hago tests, le paso al constructor el mockeado
+    }
+}
+And here you have a class that can easily be tested, because you do not directly use a class with static methods.
+
+
+------------------------------------------------------------------------------------
+
+// CONCLUSIÓN:
+
+1. El método static lo encapsulamos (wrapper)
+
+public class Wrapper {
+	public Connection getConnection() {
+		return DriverManager.getConnection();
+	}
+}
+
+2. Usamos el wrapper, mockeado o real, en lugar del llamado directo al static method. Usamos un constructor para cada caso, 
+o un único constuctor que reciba implementación-real o mockeada del objeto, 
+o pasamos al método directamente como argumento..
+
+public class ClassUnderTest {
+	
+	private Wrapper wrapper;
+
+	public ClassUnderTest(Wrapper wrapper) { //sirve para ambos casos
+		this.wrapper = wrapper; //puede ser mockeado o real
+	}
+
+	public ClassUnderTest() { //sirve para usar la impl real solamente
+		this.wrapper = new Wrapper(); instanciar en constructor
+		//this.wrapper = Wrapper.SINGLETON; recuperar de un singleton
+	}
+
+	public methodUnderTest_1(Wrapper wrapper) { //sirve para ambos casos
+		...something
+		Connection conn = wrapper.getConnection();
+		...something
+	}
+
+	public methodUnderTest_2() { //en caso de pasarlo por constructor
+		...something
+		Connection conn = wrapper.getConnection();
+		...something
+	}
+}
+
+
+EN EL CASO DEL PROYECTO HP, DONDE LOS MÉTODOS SON PUBLIC STATIC Y ADEMÁS USAN LLAMADOS STATIC INTERNOS,
+LA SOLUCIÓN ESTÁ EN PASAR AL CONSTRUCTOR, O POR ARGUMENTO EL WRAPPER HACIA EL OTRO OBJETO (MOCKEADO/REAL).
+o probar con PowerMock + Mockito.
+

@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.leo.example</groupId>
+  <artifactId>hazelcast-tutorial-servernode</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>HazelcastTutorialServerNode</name>
+  
+  
+  <properties>
+      <!--<jvm.options>-Xmx256M</jvm.options>-->
+      <jvm.options>--add-modules java.se</jvm.options>
+  </properties>
+
+
+  <dependencies>
+  
+  	<!-- :::: HAZELCAST :::: -->
+  	
+  	<!-- needed to create standalone Hazelcast cluster member and the Hazelcast Java Client -->
+  	<dependency>
+	    <groupId>com.hazelcast</groupId>
+	    <artifactId>hazelcast</artifactId>
+	    <version>4.0.1</version>
+	</dependency>
+  	<!--<dependency>
+	    <groupId>com.hazelcast</groupId>
+	    <artifactId>hazelcast-client</artifactId>
+	    <version>3.12.8</version>
+	</dependency>-->
+	<!-- por sí sólo funciona, pero si tenemos una versión de com.hazelcast:hazelcast esta debe ser la 4.0.1 -->
+	<!--<dependency>
+	    <groupId>com.hazelcast.jet</groupId>
+	    <artifactId>hazelcast-jet</artifactId>
+	    <version>4.2</version>
+	</dependency>-->
+  
+  </dependencies>
+  
+  
+  <build>
+      <plugins>
+        
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>3.2.0</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <mainClass>com.leo.example.hazelcasttutorial.servernode.ServerNodeApp</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        
+	    <plugin>
+	       <groupId>org.apache.maven.plugins</groupId>
+	       <artifactId>maven-compiler-plugin</artifactId>
+	       <version>3.3</version>
+	       <configuration>
+	         <compilerArgs>
+	              <arg>${jvm.options}</arg>
+	         </compilerArgs>
+	      </configuration>
+	    </plugin>
+	
+	    <plugin>
+	       <groupId>org.apache.maven.plugins</groupId>
+	       <artifactId>maven-surefire-plugin</artifactId>
+	       <version>2.19.1</version>
+	       <configuration>
+	            <argLine>${jvm.options}</argLine>
+	       </configuration>
+	     </plugin>
+        
+      </plugins>
+    </build>
+  
+</project>

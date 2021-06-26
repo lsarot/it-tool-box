@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example.leo</groupId>
+  <artifactId>files-management</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>FilesManagement</name>
+  
+  
+  <repositories>
+  	<repository>
+		<id>mulesoft.repo</id>
+		<name>Mulesoft</name>
+		<url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+	</repository>
+  </repositories>
+  
+  
+  <dependencies>
+  
+  	<dependency>
+	    <groupId>org.imgscalr</groupId>
+	    <artifactId>imgscalr-lib</artifactId>
+	    <version>4.2</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>net.coobird</groupId>
+	    <artifactId>thumbnailator</artifactId>
+	    <version>0.4.11</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>com.github.downgoon</groupId>
+	    <artifactId>marvin</artifactId>
+	    <version>1.5.5</version>
+	    <type>pom</type>
+	</dependency>
+	<dependency>
+	    <groupId>com.github.downgoon</groupId>
+	    <artifactId>MarvinPlugins</artifactId>
+	    <version>1.5.5</version>
+	</dependency>
+	
+	
+	<!-- https://github.com/nintha/webp-imageio-core (includes binaries for any platform) -->
+	<!--
+	<dependency>
+	    <groupId>com.github.nintha</groupId>
+	    <artifactId>webp-imageio-core</artifactId>
+	    <version>0.1.2</version>
+	</dependency>
+	-->
+	
+  
+  </dependencies>
+  
+  
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
